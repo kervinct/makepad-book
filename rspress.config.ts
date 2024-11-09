@@ -2,6 +2,7 @@ import * as path from 'path';
 import { defineConfig } from 'rspress/config';
 
 export default defineConfig({
+  base: '/makepad-treasures/',
   root: path.join(__dirname, 'docs'),
   title: 'Makepad Treasures',
   description: 'A book for makepad, want to quickly and easily to help your use makepad.',
