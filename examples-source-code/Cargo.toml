@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "hello-makepad"
+]
+resolver = "2"
+
+[workspace.dependencies]
+# Since makepad is currently changing a lot, so we use own mirror of makepad, which is based on the rik branch, beacuse it is the most active branch.
+# Updates to the mirrors will be tested through all the examples to keep the examples up and running.
+makepad-widgets = { git = "https://github.com/mindpool/makepad", branch = "rik"}

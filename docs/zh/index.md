@@ -7,8 +7,8 @@ hero:
     快速上手使用 makepad。
   actions:
     - theme: brand
-      text: 点击进入
-      link: /guide/
+      text: 示例
+      link: /examples/introduction
   image:
     src: /rspress-icon.png
     alt: Makepad Treasures Logo
