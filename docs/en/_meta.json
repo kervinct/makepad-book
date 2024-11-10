@@ -1,7 +1,12 @@
 [
     {
         "text": "examples",
-        "link": "/examples",
+        "link": "/examples/introduction",
         "activeMatch": "/examples/"
+    },
+    {
+        "text": "contribute",
+        "link": "/contribute/index",
+        "activeMatch": "/contribute/"
     }
 ]

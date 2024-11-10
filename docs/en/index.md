@@ -2,12 +2,15 @@
 pageType: home
 
 hero:
-  name: Makepad Treasures
+  name: Makepad Book
   actions:
     - theme: brand
-      text: Start
+      text: Examples
       link: /guide/
+    - theme: alt
+      text: Contribute
+      link: /contribute/index
   image:
-    src: /rspress-icon.png
-    alt: Makepad Treasures Logo
+    src: /robius-logo-680-CN.png
+    alt: Robius Logo
 ---
