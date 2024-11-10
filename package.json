@@ -1,10 +1,10 @@
 {
-  "name": "rspress-doc-template",
+  "name": "makepad-book",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "author": {
-    "name": "MindPool Maintainers"
+    "name": "Project Robius China Maintainers"
   },
   "scripts": {
     "dev": "rspress dev",

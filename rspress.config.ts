@@ -2,12 +2,12 @@ import * as path from 'path';
 import { defineConfig } from 'rspress/config';
 
 export default defineConfig({
-  base: '/makepad-treasures/',
+  base: '/makepad-book/',
   root: path.join(__dirname, 'docs'),
-  title: 'Makepad Treasures',
-  description: 'A book for makepad, want to quickly and easily to help your use makepad.',
+  title: 'Makepad Book',
+  description: 'A book for makepad, want to quickly and easily to help you use makepad.',
   lang: 'zh',
-  icon: '/rspress-icon.png',
+  icon: '/favicon.ico',
   logo: {
     light: '/logo_makepad.svg',
     dark: '/logo_makepad.svg',
@@ -22,10 +22,10 @@ export default defineConfig({
   themeConfig: {
     enableContentAnimation: true,
     socialLinks: [
-      { icon: 'github', mode: 'link', content: 'https://github.com/mindpool/makepad-treasures' },
+      { icon: 'github', mode: 'link', content: 'https://github.com/Project-Robius-China/makepad-book' },
     ],
     footer: {
-      message: '© 2024 MindPool (Makepad Treasures) Team. All Rights Reserved.',
+      message: '© 2024 Project Robius China (Makepad Book) Maintainers. All Rights Reserved.',
     },
     locales: [
       {

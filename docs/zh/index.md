@@ -2,14 +2,14 @@
 pageType: home
 
 hero:
-  name: Makepad Treasures
+  name: Makepad 之书
   tagline: |
-    快速上手使用 makepad。
+    以 Rust 之力，铸丝滑界面。
   actions:
     - theme: brand
-      text: 示例
+      text: 示例入手
       link: /examples/introduction
   image:
-    src: /rspress-icon.png
-    alt: Makepad Treasures Logo
+    src: /robius-logo-680-CN.png
+    alt: Robius Logo
 ---
