@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "hello-makepad"
+    "hello-makepad",
+    "makepad-workshop-gosim-beijing-2024"
 ]
 resolver = "2"
 
