@@ -11,6 +11,6 @@ hero:
       text: Contribute
       link: /contribute/index
   image:
-    src: /robius-logo-680-CN.png
+    src: /robius-logo-680.png
     alt: Robius Logo
 ---
