@@ -1,6 +1,14 @@
 {
+    "workshop": {
+        "zh": "工作坊",
+        "en": "Workshop"
+    },
+    "online-salon": {
+        "zh": "线上沙龙",
+        "en": "Online Salon"
+    },
     "examples": {
-        "zh": "通过示例入手",
+        "zh": "示例入手",
         "en": "Getting Started with Examples"
     },
     "contribute": {

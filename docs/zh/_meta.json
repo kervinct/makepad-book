@@ -1,5 +1,15 @@
 [
     {
+        "text": "online-salon",
+        "link": "/online-salon/index",
+        "activeMatch": "/online-salon/"
+    },
+    {
+        "text": "workshop",
+        "link": "/workshop/index",
+        "activeMatch": "/workshop/"
+    },
+    {
         "text": "examples",
         "link": "/examples/introduction",
         "activeMatch": "/examples/"
