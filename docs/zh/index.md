@@ -9,6 +9,9 @@ hero:
     - theme: brand
       text: 示例入手
       link: /examples/introduction
+    - theme: alt
+      text: 贡献指南
+      link: /contribute/index
   image:
     src: /robius-logo-680-CN.png
     alt: Robius Logo
