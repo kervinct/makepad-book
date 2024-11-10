@@ -413,13 +413,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "makepad-workshop-gosim-beijing-2024"
-version = "0.1.0"
-dependencies = [
- "makepad-widgets",
-]
-
-[[package]]
 name = "makepad-zune-core"
 version = "0.2.14"
 source = "git+https://github.com/mindpool/makepad?branch=rik#bf99ab0175285818c3ec3c7e655636de572c9598"
