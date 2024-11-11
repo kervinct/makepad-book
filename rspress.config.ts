@@ -8,6 +8,7 @@ export default defineConfig({
   description: 'A book for makepad, want to quickly and easily to help you use makepad.',
   lang: 'zh',
   icon: '/favicon.ico',
+  globalStyles: path.join(__dirname, 'theme', 'index.css'),
   logo: {
     light: '/logo_makepad.svg',
     dark: '/logo_makepad.svg',
