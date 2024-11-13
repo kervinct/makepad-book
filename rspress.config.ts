@@ -34,7 +34,7 @@ export default defineConfig({
         label: '简体中文',
         editLink: {
           docRepoBaseUrl:
-            'https://github.com/mindpool/makepad-treasures/tree/main/docs',
+            'https://github.com/Project-Robius-China/makepad-book/tree/main/docs/zh',
           text: '📝 在 GitHub 上编辑此页',
         },
         searchNoResultsText: '未搜索到相关结果',
@@ -46,7 +46,7 @@ export default defineConfig({
         label: 'English',
         editLink: {
           docRepoBaseUrl:
-            'https://github.com/mindpool/makepad-treasures/tree/main/docs',
+            'https://github.com/Project-Robius-China/makepad-book/tree/main/docs/en',
           text: '📝 Edit this page on GitHub',
         },
       }
