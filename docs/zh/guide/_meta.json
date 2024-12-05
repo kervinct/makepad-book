@@ -1,0 +1,18 @@
+[
+    "index",
+    {
+        "type": "dir",
+        "name": "start",
+        "label": "快速开始"
+    },
+    {
+        "type": "dir",
+        "name": "basic",
+        "label": "基础"
+    },
+    {
+        "type": "dir",
+        "name": "appendix",
+        "label": "附录"
+    }
+]

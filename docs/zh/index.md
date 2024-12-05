@@ -7,8 +7,8 @@ hero:
     以 Rust 之力，铸丝滑界面。
   actions:
     - theme: brand
-      text: 示例入手
-      link: /examples/introduction
+      text: 快速上手
+      link: /guide/index
     - theme: alt
       text: 贡献指南
       link: /contribute/index

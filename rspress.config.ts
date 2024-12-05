@@ -1,6 +1,8 @@
 import * as path from 'path';
 import { defineConfig } from 'rspress/config';
 
+import { pluginShiki } from '@rspress/plugin-shiki';
+
 export default defineConfig({
   base: '/makepad-book/',
   root: path.join(__dirname, 'docs'),
@@ -9,6 +11,7 @@ export default defineConfig({
   lang: 'zh',
   icon: '/favicon.ico',
   globalStyles: path.join(__dirname, 'theme', 'index.css'),
+  plugins: [],
   logo: {
     light: '/logo_makepad.svg',
     dark: '/logo_makepad.svg',
