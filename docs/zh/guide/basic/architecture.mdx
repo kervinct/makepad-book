@@ -1,6 +1,6 @@
 # Makepad Framwork 架构
 
-> 基于`rik`分支
+> 🚧 基于`rik`分支
 >
 > 源码地址: [https://github.com/makepad/makepad/tree/rik](https://github.com/makepad/makepad/tree/rik)
 
@@ -41,9 +41,7 @@ platform 的代码组织结构分为如下部分：
 - `derive_live / live_compiler / live_tokenizer` 属于 [Live 系统](#live-系统)，我们随后介绍。
 - `shader_compiler` 是着色器编译器。
 
-### platform/src
-
-在 Makepad 的 platform/src 目录下，我们找到了多个 Rust 源文件（.rs 文件），以及一些子目录，大概分类如下。
+在 Makepad 的 `platform/src` 目录下，我们找到了多个 Rust 源文件（.rs 文件），以及一些子目录，大概分类如下。
 
 - **核心模块 (`cx.rs`)**: 该文件包含了 Makepad 平台层的核心数据结构和函数（例如，上下文、配置参数等）。
 - **渲染和图形 (`draw_list.rs`, `draw_matrix.rs`, `draw_shader.rs`, `draw_vars.rs`)**: 这些文件涉及到图形渲染的逻辑，包括着色器管理、渲染队列和变换矩阵的处理。
@@ -53,13 +51,13 @@ platform 的代码组织结构分为如下部分：
 - **网络和通信 (`web_socket.rs`)**: WebSocket 实现文件，用于网络通信和数据交换。
 - **窗口管理和输入 (`window.rs`, `cursor.rs`)**: 窗口创建和管理，以及光标处理等功能的实现。
 
-看得出来，src 中主要还是封装了与 事件、UI 渲染、音视频、网络等相关跨平台的底层接口。我们暂且不去深入细节，接下来了解下什么是 Live 系统。
+看得出来，`src` 中主要还是封装了与 事件、UI 渲染、音视频、网络等相关跨平台的底层接口。我们暂且不去深入细节，接下来了解下什么是 Live 系统。
 
 ### Live 系统
 
 Live 系统是 makepad 提供的一种实时系统。因为 Rust 语言是静态编译语言，不像动态语言那样能实现运行时实时编码，所以 makepad 提供这套 Live 系统来实现实时编码的效果。正如第一章中对 makepad 愿景展示视频里所见，对代码的实时修改，无需重新编译代码，即可更新 UI。
 
-> 目前，使用 makepad studio 和 vscode，可以看到实时重载（live reload）所见即所得的效果。后续支持更多 IDE 和 编辑器。
+> 目前，使用 makepad studio 和 vscode，可以看到实时重载（live reload）所见即所得的效果，后续支持更多 IDE 和 编辑器。
 
 Live 系统是依赖于 Rust 的宏来实现的。这里有一个 Live 语法示例：
 

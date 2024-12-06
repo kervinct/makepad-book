@@ -1,5 +1,11 @@
 # Makepad 简介
 
+> 官网地址：[https://makepad.nl/](https://makepad.nl/)
+>
+> 仓库地址：[https://github.com/makepad/makepad](https://github.com/makepad/makepad)
+>
+> 🚧 目前较活跃的分支的`rik`, 建议您基于`rik`分支进行查看以便获得最新的`makepad`支持
+
 Makepad 的最终愿景是构建一个 livecoding / design 混合 IDE。就像曾经的 Visual Basic 或 Delphi 那类统一了开发者和设计师的工具一样，只不过 Makepad 是 Rust 实现，并且具有类似于 Figma 这样的设计工具。
 
 :::info Makepad诞生背景
@@ -8,9 +14,9 @@ Makepad 诞生于五年前（2019），可以查看 [makepad history](https://gi
 
 Makepad 的作者是 Rik Arends。这个名字也许很多人不熟悉，但是你一定听过 Cloud9 IDE 和 ACE 代码编辑器。
 
-- Cloud9 IDE 成立于 2010 年，在 2016 年卖给了亚马逊。它是一种云 IDE，一个基于云的开源集成开发环境。它支持超过40种语言，包括：PHP和Ruby，Python和JavaScript/Node.js。它几乎完全用JavaScript编写，并使用Node.js上后端。
+- [Cloud9 IDE](https://aws.amazon.com/cn/cloud9/)： 成立于 2010 年，在 2016 年卖给了亚马逊。它是一种云 IDE，一个基于云的开源集成开发环境。它支持超过40种语言，包括：PHP和Ruby，Python和JavaScript/Node.js。它几乎完全用JavaScript编写，并使用Node.js上后端。
 
-- Ace（[全称Ajax.org](http://xn--ajax-4s8fw06s.org/) Cloud9 Editor）是一个用JavaScript编写的独立的代码编辑器。其目标是创建一个基于Web的代码编辑器，与现有的本地编辑器（如TextMate、Vim或Eclipse）的功能、可用性和性能相匹配并加以扩展。它可以很容易地嵌入到任何网页和JavaScript应用程序中。Ace是作为Cloud9 IDE的主要编辑器和Mozilla Skywriter项目的继承者而开发的
+- [Ace](https://ace.c9.io/)：一个用JavaScript编写的独立的代码编辑器。其目标是创建一个基于Web的代码编辑器，与现有的本地编辑器（如TextMate、Vim或Eclipse）的功能、可用性和性能相匹配并加以扩展。它可以很容易地嵌入到任何网页和JavaScript应用程序中。Ace是作为Cloud9 IDE的主要编辑器和Mozilla Skywriter项目的继承者而开发的
 
 Rik Arends 在创造这两个产品的时候，使用基于 HTML/CSS/Javascript 的 常见 Web 前端技术，他认为使用 HTML 作为 IDE 的 UI 简直是疯了，他深受折磨。比如，他最想做的代码折叠动画，用 HTML 等前端技术做起来非常困难。
 
@@ -51,14 +57,14 @@ Rik Arends 在创造这两个产品的时候，使用基于 HTML/CSS/Javascript 
 > 目前 `makepad` 最活跃的分支是 https://github.com/makepad/makepad/tree/rik
 
 
-### Makepad 优势
+### 优势
 
 - `Makepad`可跨平台部署，支持 Web、移动和桌面三端。
 - 使用`着色器（Shader）`进行绘制，使得 `widget` 性能更好
 - 提供`Makepad Studio`来完善工作流程等
 - 为`VR/AR`做准备
 
-### Makepad  采用的技术栈优劣
+### 采用的技术栈优劣
 
 - Rust 拥有很多优势，比如高性能、安全、强大的类型系统、可预测的运行时、强大的包管理器、与 C 无缝兼容的 ABI、官方维护的唯一编译器（无需考虑像C/Cpp 那样多个编译器差异）。
 
@@ -68,21 +74,23 @@ Rik Arends 在创造这两个产品的时候，使用基于 HTML/CSS/Javascript 
 
 - Makepad 使用`着色器来渲染 UI 样式`，是因为高性能，且着色器功能非常强大。但缺点也非常明显，耗电量很大，特别是屏幕绘制面积较大时。着色器语言也带来了学习负担。着色器编译时间也比较慢。
 
-- Makepad 还采用了`混合即时模式（Hybrid immediate mode，交替使用即时模式和保留模式）`。这样的好处是，从代码角度来看，数据变化时更新 UI 非常简单。布局也会更加简单。但是缺点是，与 Swfit/ Flutter / React 是不同的模式，需要学习成本。 布局模型也不像 flexbos 或 flutter 模式，但是可以扩展。
+- Makepad 还采用了`混合即时模式（Hybrid immediate mode，交替使用即时模式和保留模式）`。这样的好处是，从代码角度来看，数据变化时更新 UI 非常简单。布局也会更加简单。但是缺点是，与 Swfit/ Flutter / React 是不同的模式，需要学习成本。 布局模型也不像 flexbox 或 flutter 模式，但是可以扩展。
 
 - Makepad 也重新实现了`渲染栈（render stack）`。优点是，可以利用 GPU 来加速 UI，容易将设计能力整合到系统中。缺点是，字体渲染需要重新进行，需要自己加载 ttf 文件，并且增加 Web/ 移动设备的包大小。难以与仅提供高级渲染结构（比如 HTML 或 本地平台的 UI 工具包） 用于本地功能和可访问性的系统集成（React Native 的优势所在）。将越来越多的本地 API 桥接到 Rust/Makepad 是一项巨大的任务。
 
-**世界上不存在完美的技术栈，一切都只是权衡**。Makepad 也是在这种不断的权衡之下发展的。
+**世界上不存在完美的技术栈，一切都只是权衡**，Makepad 也是在这种不断的权衡之下发展的。
 
-## 基于 Makepad 的应用及示例
+## 应用及示例
+
+你可以从 `Makepad`仓库中的示例[examples](https://github.com/makepad/makepad/tree/rik/examples)及本书的[示例入手](/examples/introduction)单元来学习 `Makepad`。
+
+也可以在线体验：
+
+- [Makepad Studio](https://makepad.dev/)：Makepad Studio 在线体验（基础版本）
+- [Ironfish Synthesizer](https://makepad.nl/makepad-example-ironfish/index.html)：一个音乐合成器
+
 
 两个生产级应用：
 
 - [Robrix](https://github.com/project-robius/robrix)：Robius 基于 Matrix 聊天客户端。
-- [Moly](https://github.com/moxin-org/moly)：纯 Rust 语言的 AI LLM 应用程序
-
-更多的 Makepad 应用或者 demo 可以查看 [示例入手](/examples/introduction)
-
-## 小结
-
-本章介绍了 Makepad 的基本情况，请继续阅读后面章节来深入了解 Makepad。
+- [Moly](https://github.com/moxin-org/moly)：纯 Rust 语言的 AI LLM 应用程序。

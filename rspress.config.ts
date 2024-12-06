@@ -2,6 +2,7 @@ import * as path from 'path';
 import { defineConfig } from 'rspress/config';
 
 import { pluginShiki } from '@rspress/plugin-shiki';
+import mermaid from 'rspress-plugin-mermaid';
 
 export default defineConfig({
   base: '/makepad-book/',
@@ -28,9 +29,6 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', mode: 'link', content: 'https://github.com/Project-Robius-China/makepad-book' },
     ],
-    footer: {
-      message: '© 2024 Project Robius China (Makepad Book) Maintainers. All Rights Reserved.',
-    },
     locales: [
       {
         lang: 'zh',
