@@ -1,4 +1,4 @@
-# Makepad Framwork 架构
+# Makepad Framework 架构
 
 > 🚧 基于`rik`分支
 >
@@ -90,7 +90,7 @@ pub struct Button {
 
 我们暂且不去深入 Live 系统的工作原理，我们只需要理解这套系统的作用和其语法即可。
 
-具体更多细节将在后面[Live DSL](/guide/basic/live-DSL)章节介绍。
+具体更多细节将在后面[Live DSL](/guide/live-DSL/index)章节介绍。
 
 #### MPSL 着色器 DSL 语言
 
@@ -129,7 +129,7 @@ MPSL 代码是可以嵌入到 Live DSL 代码中的。其中 `DrawColor` 的字�
 
 示例代码中 `#[[repr(C)]` 也是 MPSL 着色器语言的硬性要求，这是为结构体指定了兼容 C-ABI 的布局，目的是为了阻止 Rust 编译器对字段重新排序。
 
-同样，本章不会去深入着色器语法和其渲染机制的更多细节，您看查看[着色语言](guide/basic/shading-language)章节介绍。
+同样，本章不会去深入着色器语法和其渲染机制的更多细节，您看查看[着色语言](guide/shading-language)章节介绍。
 
 #### 为什么不使用脚本语言？
 
@@ -180,10 +180,4 @@ makepad-widget 的 src 组织结构中包含了很多文件，代表了不同的
 4. 布局和视图：如 `dock.rs`, `splitter.rs`, `view.rs` 等，这些可能用于组织和管理 UI 控件的布局。
 5. 事件相关：`widget_match_event.rs` 可能与事件处理机制相关。
 
-更多细节我们在后面 [Makepad Widget](/guide/basic/widget) 章节中介绍。
-
-
-
-## 小结
-
-本章对 `Makepad Framework` 的架构做了基本介绍，描述了 `Makepad Framework` 两大组成部分 `platform` 和 `widget` 各自的作用和基本组成结构，让开发者对 `Makepad Framework` 有整体的了解，为后面进一步使用 makepad 以及深入更多细节做准备 。
+更多细节我们在后面 [Makepad Widget](/guide/widget/index) 章节中介绍。

@@ -18,6 +18,24 @@ Makepad Widget 作为 Makepad 框架的一部分，由 makepad-widgets 库预置
 
 本章不会对 makepad-widgets 库中的所有控件进行一一讲解（这部分内容将在后续应用实践中逐步展开），而是对其共性和公共特点进行描述，让你对  makepad UI 控件的基本工作机制建立一个整体的心智模型，以便更好地应用它们。
 
+:::info Widget 与 Compont 的主要区别
+
+**Widget:**
+
+- 基础 UI 构建块
+- 直接处理事件和绘制
+- 关注基础 UI 能力
+
+**Component:**
+
+- Widget 的组合
+- 更高层的抽象
+- 关注业务逻辑
+- 组合已有 Widget
+- 重用性更强
+
+:::
+
 ## 声明式 UI 构建自定义组件
 
 我们先以一个自定义的组件示例开始逐步了解这些内置控件。这个示例来自于 makepad 中的 simple 示例，但是本章会对其略微修改。该示例的最终效果如视频所示：
@@ -352,7 +370,7 @@ App = {{App}} {
 impl MatchEvent for App {
     fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions) {
         // 检查按钮是否被点击
-        // 这里可以直接通过 `id!()`使用 button1 实例，获取被点击 Button 
+        // 这里可以直接通过 `id!()`使用 button1 实例，获取被点击 Button
         // `clicked` 是 Button 组件的方法
         if self.ui.button(id!(button1)).clicked(&actions) {
             // 增加计数器
@@ -361,7 +379,7 @@ impl MatchEvent for App {
             // 更新标签文本
             // 同样，通过 `id!()` 获取 input1 文本输入实例
             let input = self.ui.text_input(id!(input1));
-            // 通过文本输入框组件内置的 `set_text_and_redraw` 
+            // 通过文本输入框组件内置的 `set_text_and_redraw`
             // 更新文本输入框的内容为新的计数器值，并触发即时重绘。
             input.set_text_and_redraw(cx, &format!("Counter: {}", self.counter));
         }
@@ -475,7 +493,7 @@ impl<T: 'static + ? Sized + Clone + Debug> WidgetActionTrait for T {
     fn ref_cast_type_id(&self) -> TypeId {
         TypeId::of::<T>()
     }
-        
+
     fn box_clone(&self) -> Box<dyn WidgetActionTrait> {
         Box::new((*self).clone())
     }
@@ -642,9 +660,3 @@ impl Button {
 - 保持类型安全，同时允许动态行为。
 
 这个系统的优雅之处在于它结合了即时的事件处理和延迟的 action 处理，提供了灵活性和性能的平衡。
-
-## 小结
-
-## 小结
-
-本章通过实现一个 Simple 应用示例，来展示 Makepad 如何编写应用。在这个过程中，你应该能对 Makepad Widget 的工作机制建立一个心智模型。这个心智模型，将指导你进一步深入 makepad 的更多应用示例。

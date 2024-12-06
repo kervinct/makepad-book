@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: 快速上手
-      link: /guide/index
+      link: /guide/start/introduction
     - theme: alt
       text: 贡献指南
       link: /contribute/index

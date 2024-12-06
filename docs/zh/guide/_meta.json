@@ -1,5 +1,4 @@
 [
-    "index",
     {
         "type": "dir",
         "name": "start",
@@ -7,8 +6,28 @@
     },
     {
         "type": "dir",
-        "name": "basic",
-        "label": "基础"
+        "name": "widget",
+        "label": "Widget"
+    },
+    {
+        "type": "dir",
+        "name": "live-DSL",
+        "label": "Live DSL"
+    },
+    {
+        "type": "dir",
+        "name": "layout-system",
+        "label": "布局系统"
+    },
+    {
+        "type": "dir",
+        "name": "animation-system",
+        "label": "动画系统"
+    },
+    {
+        "type": "dir",
+        "name": "shading-language",
+        "label": "着色语言"
     },
     {
         "type": "dir",
