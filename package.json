@@ -16,10 +16,10 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rspress": "^1.35.3",
+    "rspress-plugin-align-image": "^0.3.0",
     "rspress-plugin-mermaid": "^0.3.0"
   },
   "devDependencies": {
-    "@rspress/plugin-shiki": "^1.37.4",
     "@types/node": "^16",
     "@types/react": "^18.3.12",
     "chalk": "^5.3.0",

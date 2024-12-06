@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { defineConfig } from 'rspress/config';
 
-import { pluginShiki } from '@rspress/plugin-shiki';
+// plugins
 import mermaid from 'rspress-plugin-mermaid';
+import alignImage from 'rspress-plugin-align-image';
 
 export default defineConfig({
   base: '/makepad-book/',
@@ -12,7 +13,10 @@ export default defineConfig({
   lang: 'zh',
   icon: '/favicon.ico',
   globalStyles: path.join(__dirname, 'theme', 'index.css'),
-  plugins: [],
+  plugins: [
+    mermaid(),
+    alignImage()
+  ],
   logo: {
     light: '/logo_makepad.svg',
     dark: '/logo_makepad.svg',
