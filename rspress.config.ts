@@ -11,7 +11,7 @@ export default defineConfig({
   root: path.join(__dirname, 'docs'),
   title: 'Makepad Book',
   description: 'A book for makepad, want to quickly and easily to help you use makepad.',
-  lang: 'zh',
+  lang: 'en',
   icon: '/favicon.ico',
   globalStyles: path.join(__dirname, 'theme', 'index.css'),
   plugins: [
@@ -28,6 +28,7 @@ export default defineConfig({
   markdown: {
     showLineNumbers: true,
     checkDeadLinks: true,
+    highlightLanguages:[['rs', 'rust']]
   },
   route: {
     cleanUrls: true,
