@@ -1,7 +1,7 @@
 import { useLang, usePageData } from 'rspress/runtime';
 import Theme from 'rspress/theme';
-import Announcement from './components/announcement';
-
+import Announcement from './components/Announcement';
+import { HomeLayout } from './pages/home';
 const ANNOUNCEMENT_URL= "/contribute";
 
 const Layout = () => {
@@ -25,9 +25,10 @@ const Layout = () => {
     )
 };
 
+export * from 'rspress/theme';
+
 export default {
   ...Theme,
   Layout,
+  HomeLayout,
 };
-
-export * from 'rspress/theme';

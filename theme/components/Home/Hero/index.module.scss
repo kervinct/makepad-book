@@ -1,0 +1,107 @@
+.hero {
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  &-inner {
+    width: 100%;
+    gap: 16px;
+    padding: 28px 0;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .logo {
+        user-select: none;
+        position: relative;
+        &-img {
+            height: 200px;
+        }
+    }
+
+    .title {
+        background: #F66B24;
+        text-align: center;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 72px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 93.6px;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 50px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 72px;
+    }
+
+    .description {
+        text-align: center;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 400;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+        .get-started {
+            background: #F66B24;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: all 0.3s;
+            &:hover {
+                background: #f77c3d;
+            }
+        }
+    }
+
+  }
+}
+
+
+@media screen and (max-width: 600px) {
+    .hero {
+        &-inner {
+            .logo {
+                &-img {
+                    height: 140px !important;
+                }
+            }
+
+            .title {
+                font-size: 32px !important;
+                line-height: normal !important;
+            }
+
+            .subtitle {
+                font-size: 20px !important;
+                line-height: normal !important;
+            }
+
+            .description {
+                line-height: 20px;
+                font-size: 16px !important;
+            }
+
+            .button-group {
+                .get-started {
+                    font-size: 14px !important;
+                }
+            }
+        }
+    }
+}
