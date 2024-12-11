@@ -4,18 +4,22 @@ import { defineConfig } from 'rspress/config';
 // plugins
 import mermaid from 'rspress-plugin-mermaid';
 import alignImage from 'rspress-plugin-align-image';
+import { pluginRss } from '@rspress/plugin-rss';
 
 export default defineConfig({
   base: '/makepad-book/',
   root: path.join(__dirname, 'docs'),
   title: 'Makepad Book',
   description: 'A book for makepad, want to quickly and easily to help you use makepad.',
-  lang: 'zh',
+  lang: 'en',
   icon: '/favicon.ico',
   globalStyles: path.join(__dirname, 'theme', 'index.css'),
   plugins: [
     mermaid(),
-    alignImage()
+    alignImage(),
+    pluginRss({
+      siteUrl: 'https://project-robius-china.github.io/makepad-book/',
+    }),
   ],
   logo: {
     light: '/logo_makepad.svg',
@@ -24,6 +28,7 @@ export default defineConfig({
   markdown: {
     showLineNumbers: true,
     checkDeadLinks: true,
+    highlightLanguages:[['rs', 'rust']]
   },
   route: {
     cleanUrls: true,
