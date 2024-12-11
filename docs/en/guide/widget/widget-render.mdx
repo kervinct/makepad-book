@@ -1,8 +1,8 @@
-# Widget 渲染机制
+# Rendering Mechanism
 
-## 绘制流程控制
+## Drawing Process Control
 
-### DrawStep 状态机
+### DrawStep State Machine
 
 ```rust
 
@@ -45,31 +45,31 @@ impl DrawStepApi for DrawStep {
 
 pub type DrawStep = Result<(), WidgetRef>;
 ```
-基于 `Result` 设计状态机的优势：
+Advantages of designing a state machine based on `Result`:
 
-#### 1. **支持增量渲染**
+#### 1. **Supports Incremental Rendering**
 
-- `Result::Err(WidgetRef)` 表示渲染未完成,需要继续下一步
-- `Result::Ok(())` 表示渲染完成
-- 这种设计让渲染过程可以被分成多个步骤执行
+- `Result::Err(WidgetRef)` indicates rendering is incomplete, needs next step
+- `Result::Ok(())` indicates rendering is complete
+- This design allows rendering process to be divided into multiple executable steps
 
-#### 2. **状态保持**
+#### 2. **State Preservation**
 
-- 使用 `Result` 可以在每个渲染步骤之间保持状态
-- `Err(WidgetRef)` 携带了下一步需要渲染的组件信息
+- Using `Result` can maintain state between rendering steps
+- `Err(WidgetRef)` carries information about which component needs rendering next
 
-#### 3. **控制流管理**
+#### 3. **Control Flow Management**
 
-- 通过 `?` 运算符优雅地处理渲染流程
-- 容易实现渲染的暂停、继续和终止
-- 易于优化，支持复杂交互
+- Elegantly handles rendering process using `?` operator
+- Easy to implement rendering pause, continue, and termination
+- Easy to optimize, supports complex interactions
 
-#### 4. **内存效率**
+#### 4. **Memory Efficiency**
 
-- `Result` 是零成本抽象
-- 状态机切换不会产生额外开销
+- `Result` is a zero-cost abstraction
+- State machine transitions produce no additional overhead
 
-### 绘制流程
+### Drawing Process
 
 ```mermaid
 
@@ -88,40 +88,40 @@ graph TD
 
 ```
 
-下面通过一个简单 Button widget 来说明绘制流程：
+Let's explain the drawing process through a simple `Button` widget:
 
 ```rust
 pub struct Button {
-    // 绘制状态机
+    // Drawing state machine
     #[rust] draw_state: DrawStateWrap<DrawState>,
-    // 布局信息
+    // Layout information
     #[layout] layout: Layout,
-    // 定位信息
+    // Positioning information
     #[walk] walk: Walk,
-    // 背景绘制
+    // Background drawing
     #[live] draw_bg: DrawColor,
-    // 文本绘制
+    // Text drawing
     #[live] draw_text: DrawText,
 }
 
 impl Widget for Button {
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
-        // 1. 初始化绘制状态
+        // 1. Initialize drawing state
         if self.draw_state.begin(cx, DrawState::DrawBackground) {
-            // 开始布局计算
+            // Start layout calculation
             self.draw_bg.begin(cx, walk, self.layout);
             return DrawStep::make_step();
         }
 
-        // 2. 绘制背景
+        // 2. Draw background
         if let Some(DrawState::DrawBackground) = self.draw_state.get() {
             self.draw_bg.end(cx);
-            // 切换到文本绘制状态
+            // Switch to text drawing state
             self.draw_state.set(DrawState::DrawText);
             return DrawStep::make_step();
         }
 
-        // 3. 绘制文本
+        // 3. Draw text
         if let Some(DrawState::DrawText) = self.draw_state.get() {
             let text_walk = Walk::size(Size::Fill, Size::Fit);
             self.draw_text.draw_walk(cx, scope, text_walk)?;
@@ -132,57 +132,58 @@ impl Widget for Button {
     }
 }
 
-// 绘制状态枚举
+// Drawing state enumeration
 #[derive(Clone)]
 enum DrawState {
     DrawBackground,
     DrawText
 }
 ```
-关键点解析:
+Key points analysis:
 
-1. **状态管理**
-
-- DrawStateWrap 管理绘制状态
-- 每个状态对应一个绘制阶段
-- 可以在任何阶段中断和恢复
-
-2. **布局系统**
+1. **State Management**
+    - DrawStateWrap manages drawing state
+    - Each state corresponds to a drawing phase
+    - Can interrupt and resume at any stage
+2. **Layout System**
 
 ```rust
-// 设置布局
+// Set layout
 self.draw_bg.begin(cx, walk, self.layout);
 
-// Turtle 会自动处理:
-// - 元素位置计算
-// - Margin/Padding 处理
-// - 子元素布局
+// Turtle automatically handles:
+// - Element position calculation
+// - Margin/Padding handling
+// - Child element layout
+
 ```
-3. **渐进式绘制**
+
+1. **Progressive Drawing**
 
 ```rust
-// 返回继续标记
+// Return continue marker
 return DrawStep::make_step();
 
-// 返回完成标记
+// Return completion marker
 return DrawStep::done();
 ```
 
-4. **状态转换**
+1. **State Transitions**
 
 ```rust
-// 切换到下一个状态
+// Switch to next state
 self.draw_state.set(DrawState::DrawText);
 
-// 结束绘制
+// End drawing
 self.draw_state.end();
 ```
 
-### 绘制模型
+### Drawing Model
 
-Makepad 采用了一个复杂但高效的延迟绘制系统。
+Makepad employs a sophisticated but efficient deferred drawing system. 
 
-这个系统的核心特点是:绘制命令不会立即执行，而是被收集到绘制列表(DrawList)中，最后统一处理。
+The core feature of this system is that drawing commands are not executed immediately, but are collected into a draw list (DrawList) for batch processing.
+
 
 ```mermaid
 graph TD
@@ -194,10 +195,10 @@ graph TD
     E --> G[Final Render]
     F --> G
 ```
-DrawList 是 Makepad 绘制系统的核心。让我们看看它的结构：
+DrawList is the core of Makepad's drawing system. Let's look at its structure:
 
 ```rust
-// 在 platform/src/draw_list.rs 中
+// In platform/src/draw_list.rs
 pub struct CxDrawList {
     pub debug_id: LiveId,
     pub codeflow_parent_id: Option<DrawListId>,
@@ -221,26 +222,27 @@ pub struct CxDrawItem {
     pub os: CxOsDrawCall
 }
 ```
-当我们调用 redraw 命令时，实际发生的是：
+When we call a `redraw` command, here's what actually happens:
 
 ```rust
 impl DrawQuad {
     pub fn draw(&mut self, cx: &mut Cx2d) {
-        // 1. 不是立即绘制，而是收集绘制命令
+        // 1. Not immediate drawing, but collecting draw commands
         if let Some(mi) = &mut self.many_instances {
-            // 批处理模式：将实例数据添加到缓冲区
-            // 这允许多个相似的绘制操作被批量处理，大大减少 GPU 调用次数
+            // Batch processing mode: Add instance data to buffer
+            // This allows multiple similar draw operations to be batch processed,
+            // greatly reducing GPU calls
             mi.instances.extend_from_slice(self.draw_vars.as_slice());
         }
         else if self.draw_vars.can_instance() {
-            // 单实例模式：创建新的实例
+            // Single instance mode: Create new instance
             let new_area = cx.add_aligned_instance(&self.draw_vars);
             self.draw_vars.area = cx.update_area_refs(self.draw_vars.area, new_area);
         }
     }
 }
 ```
-绘制命令合并：
+Drawing command merging:
 
 ```rust
 impl CxDrawList {
@@ -249,7 +251,7 @@ impl CxDrawList {
         sh: &CxDrawShader,
         draw_vars: &DrawVars
     ) -> Option<usize> {
-        // 尝试找到可以合并的绘制调用
+        // Try to find mergeable draw calls
         if let Some((_,draw_call)) = self.draw_items.iter_mut()
             .find(|item| item.can_append(sh, draw_vars)) {
             return Some(draw_call);
@@ -258,37 +260,37 @@ impl CxDrawList {
     }
 }
 ```
-视图优化：
+View optimization:
 
 ```rust
 enum ViewOptimize {
     None,
-    DrawList,    // 使用独立绘制列表
-    Texture     // 渲染到纹理缓存
+    DrawList,    // Use independent draw list
+    Texture     // Render to texture cache
 }
 ```
-比如 Makepad 内置的 View Widget ，就用了 ViewOptimize 优化。
+For example, Makepad's built-in `View` Widget uses `ViewOptimize` optimization.
 
-**1.DrawList 模式**会为视图创建一个独立的绘制列表，这个列表可以被缓存和重用。
+**1. DrawList mode** creates an independent draw list for the view that can be cached and reused.
 
-适用场景：
+Suitable scenarios:
 
-- 内容变化频率适中的界面
-- 需要保持交互响应性的复杂视图
-- 包含大量子元素的容器
+- Interfaces with moderate frequency of changes
+- Complex views that need to maintain interaction responsiveness
+- Containers with many child elements
 
-**2.Texture 模式**会将整个视图渲染到一个纹理中，然后将这个纹理作为一个整体来使用。
+**2. Texture mode** renders the entire view to a texture, then uses this texture as a whole.
 
-适用场景：
+Suitable scenarios:
 
-- 静态或很少变化的内容
-- 视觉效果复杂但内容相对稳定的视图
-- 需要特殊视觉效果的界面（如模糊、变换等）
+- Static or rarely changing content
+- Views with complex visual effects but relatively stable content
+- Interfaces requiring special visual effects (like blur, transforms, etc.)
 
-在实践中，可以合理划分视图层级。
+In practice, view hierarchy can be reasonably divided.
 
 ```rust
-// 推荐的视图层级结构
+// Recommended view hierarchy structure
 RootView (No Optimization)
 ├── StaticBackground (Texture)
 ├── ContentArea (DrawList)
@@ -297,19 +299,19 @@ RootView (No Optimization)
 └── OverlayLayer (No Optimization)
 ```
 
-### 绘制区域（Area）管理
+### Area Management
 
-在 Makepad 中，区域管理的核心是 `Area` 类型，它用于跟踪和管理 widget 在屏幕上的绘制区域。
+In Makepad, the core of area management is the `Area` type, which is used to track and manage the drawing area of widgets on screen. 
 
-每个 Widget 都有一个关联的 Area，这个 Area 不仅用于确定绘制位置，还用于事件处理（Event）和命中（Hit）检测。
+Each Widget has an associated Area, which is used not only for determining drawing position but also for event handling (Event) and hit detection.
 
 ```rust
-// 核心区域类型定义
+// Core area type definition
 #[derive(Clone, Copy, Debug)]
 pub enum Area {
     Empty,
-    Instance(InstanceArea), // 实例区域(用于渲染实例)
-    Rect(RectArea) // 矩形区域(用于基础图形)
+    Instance(InstanceArea), // Instance area (for rendering instances)
+    Rect(RectArea) // Rectangle area (for basic shapes)
 }
 
 pub struct RectArea {
@@ -326,40 +328,39 @@ pub struct InstanceArea {
     pub redraw_id: u64
 }
 ```
-`Area` 的生命周期如下图：
+The lifecycle of an `Area` can be visualized as follows:
 
 ```mermaid
 graph TD
-    A[Widget创建] --> B[布局计算]
-    B --> C[区域分配]
-    C --> D[区域更新]
-    D --> E[事件处理]
-    E --> F[重绘管理]
+    A[Widget Creation] --> B[Layout Calculation]
+    B --> C[Area Allocation]
+    C --> D[Area Update]
+    D --> E[Event Handling]
+    E --> F[Redraw Management]
     F --> D
-
 ```
-`Area` 管理的核心实现如下：
+Here's the core implementation of `Area` management:
 
-- 区域创建和分配
+- Area Creation and Allocation:
 
 ```rust
 impl Widget {
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
-        // 从布局计算开始
+        // Start with layout calculation
         if self.draw_state.begin(cx, DrawState::Begin) {
-            // 开始布局计算
+            // Begin layout calculation
             cx.begin_turtle(walk, self.layout);
 
-            // 区域分配
+            // Area allocation
             cx.walk_turtle_with_area(&mut self.area, walk);
 
-            // 区域更新和引用管理
+            // Area update and reference management
             self.area = cx.update_area_refs(self.area, new_area);
         }
     }
 }
 ```
-- 区域更新和追踪
+- Area Update and Tracking:
 
 ```rust
 impl Cx2d {
@@ -368,55 +369,55 @@ impl Cx2d {
             return new_area;
         }
 
-        // 更新IME区域
+        // Update IME area
         if self.ime_area == old_area {
             self.ime_area = new_area;
         }
 
-        // 更新手指事件区域
+        // Update finger event areas
         self.fingers.update_area(old_area, new_area);
 
-        // 更新拖放区域
+        // Update drag-drop areas
         self.drag_drop.update_area(old_area, new_area);
 
-        // 更新键盘焦点区域
+        // Update keyboard focus areas
         self.keyboard.update_area(old_area, new_area);
 
         new_area
     }
 }
 ```
-- 区域裁剪，用于控制了内容的可见范围，维护视觉边界，处理内容溢出。
-    - 对于实例区域(Instance)：裁剪信息存储在着色器的绘制调用统一变量中
-    - 对于矩形区域(Rect)：裁剪信息直接存储在 RectArea 结构体中：
+- Area Clipping, which controls content visibility, maintains visual boundaries, and handles content overflow.
+    - For Instance areas: Clipping information is stored in shader draw call uniforms
+    - For Rectangle areas: Clipping information is stored directly in the RectArea structure:
 
 ```rust
 pub struct CxRectArea {
-    pub rect: Rect,                // 矩形本身
-    pub draw_clip: (DVec2, DVec2)  // 存储裁剪范围的最小点和最大点
+    pub rect: Rect,                // The rectangle itself
+    pub draw_clip: (DVec2, DVec2)  // Stores clipping range's min and max points
 }
 ```
 
-裁剪实现细节核心的裁剪功能在 `Area` 源码中的 `clipped_rect()` 方法中实现。
+The core clipping functionality is implemented in the `clipped_rect()` method within the `Area` source code.
 
-对于实例区域(Instance)：
+For Instance areas:
 
-1. 裁剪边界以四个值(minX, minY, maxX, maxY)的形式存储在着色器统一变量中
-2. 在绘制时，着色器会应用这些裁剪边界来限制像素的绘制范围
-3. 裁剪在顶点着色器阶段通过限制顶点位置来实现
+1. Clipping boundaries are stored in shader uniforms as four values (minX, minY, maxX, maxY)
+2. During drawing, the shader applies these clipping boundaries to limit pixel drawing range
+3. Clipping is implemented at the vertex shader stage by limiting vertex positions
 
-对于矩形区域(Rect)：
+For Rectangle areas:
 
-1. 裁剪边界直接存储在 `RectArea` 结构中
-2. 裁剪通过矩形与其裁剪边界的求交来实现
-3. 这会生成一个表示可见部分的新矩形
+1. Clipping boundaries are stored directly in the `RectArea` structure
+2. Clipping is implemented through intersection of rectangles with their clipping boundaries
+3. This generates a new rectangle representing the visible portion
 
-#### 事件处理
+#### Event Handling
 
-Makepad的事件系统分为几个层级:
+Makepad's event system is divided into several levels:
 
 ```rust
-// 顶层事件枚举
+// Top-level event enumeration
 pub enum Event {
     FingerDown(FingerDownEvent),
     FingerUp(FingerUpEvent),
@@ -426,34 +427,32 @@ pub enum Event {
     // ...
 }
 
-// 事件命中检测结果
+// Event hit detection results
 pub enum Hit {
     KeyFocus(KeyFocusEvent),
     FingerDown(FingerDownEvent),
     Nothing
 }
 ```
-事件的分发遵循以下流程:
-
+Events are dispatched following this flow:
 ```rust
 impl Widget for MyWidget {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
-        // 检查事件是否命中当前widget的area
+        // Check if event hits this widget's area
         match event.hits(cx, self.area()) {
             Hit::FingerDown(e) => {
-                // 处理点击事件
+                // Handle click event
                 cx.widget_action(uid, &scope.path, MyAction::Clicked);
             }
             Hit::KeyDown(e) => {
-                // 处理键盘事件
+                // Handle keyboard event
             }
             _ => ()
         }
     }
 }
 ```
-下面是一个简单的 `Button` 事件处理的示例：
-
+Here's an example of a simple `Button` event handling:
 ```rust
 #[derive(Live)]
 pub struct Button {
@@ -466,16 +465,16 @@ impl Widget for Button {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         let uid = self.widget_uid();
 
-        // 处理动画事件
+        // Handle animation events
         if self.animator_handle_event(cx, event).must_redraw() {
             self.redraw(cx);
         }
 
         match event.hits(cx, self.area()) {
             Hit::FingerDown(_) => {
-                // 触发点击动画
+                // Trigger click animation
                 self.animator_play(cx, id!(down.on));
-                // 发送点击事件action
+                // Send click event action
                 cx.widget_action(uid, &scope.path, ButtonAction::Clicked);
             }
             Hit::FingerUp(_) => {
@@ -487,46 +486,46 @@ impl Widget for Button {
 }
 ```
 
-## 事件系统
+## Event System
 
-事件系统分层架构:
+The event system has a layered architecture:
 
-- 底层事件系统(Event) - 处理系统和UI基础事件
-- 中层动作系统(Action) - 处理组件间通信和状态更新
-- 上层消息系统(Signal/Channel) - 处理跨线程通信
+- Low-level event system (Event) - Handles system and UI basic events
+- Mid-level action system (Action) - Handles component communication and state updates
+- High-level message system (Signal/Channel) - Handles cross-thread communication
 
-### Makepad 的线程模型
+### Makepad's Thread Model
 
-![Makepad 的线程模型](https://trusted-heron-8b2.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fee83deb1-85d6-437c-894c-b4353fce458b%2Fa3942c5c-f498-47e6-bcac-6a82b18d3537%2Fmakepad-thread-model.png?table=block&id=15269449-ef79-8015-8867-fbaf2f6197d5&spaceId=ee83deb1-85d6-437c-894c-b4353fce458b&width=1200&userId=&cache=v2)
+![Makepad's Thread Model](https://trusted-heron-8b2.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fee83deb1-85d6-437c-894c-b4353fce458b%2Fa3942c5c-f498-47e6-bcac-6a82b18d3537%2Fmakepad-thread-model.png?table=block&id=15269449-ef79-8015-8867-fbaf2f6197d5&spaceId=ee83deb1-85d6-437c-894c-b4353fce458b&width=1200&userId=&cache=v2)
 
 Makepad 分为主 `UI 线程`和其他多个 `Worker 线程`。
 
-1. **单一UI渲染线程**：
+1. **Single UI Thread**
 
-- UI 渲染和事件处理在主线程进行
-- 主线程运行事件循环(event_loop)
-- 所有 UI 更新必须发生在主线程
+- UI rendering and event handling occur on the main thread
+- Main thread runs the event loop (event_loop)
+- All UI updates must happen on the main thread
 
-2. **多个 Worker 线程**：
+2. **Multiple Worker Threads**
 
-- 通过线程池管理后台任务
-- 提供多种线程池实现以满足不同需求
-- 工作线程不直接操作 UI
+- Background tasks are managed through thread pools
+- Multiple thread pool implementations available for different needs
+- Worker threads don't directly manipulate UI
 
-3. **线程间通信**：
+3. **Inter-thread Communication Mechanisms**
 
-- Action 系统用于线程间消息传递
-- Signal 机制用于线程同步
-- Channel 用于数据传输
+- Action system for thread message passing
+- Signal mechanism for thread synchronization
+- Channel for data transfer
 
-主线程(UI线程)模型：
+Main thread (UI thread) model:
 
 ```rust
-// app_main 宏中定义了主线程入口
+// Main thread entry point defined in app_main macro
 pub fn app_main() {
-    // 创建 Cx
+    // Create Cx
     let mut cx = Rc::new(RefCell::new(Cx::new(Box::new(move |cx, event| {
-        // 主要事件处理循环
+        // Main event handling loop
         if let Event::Startup = event {
             *app.borrow_mut() = Some($app::new_main(cx));
         }
@@ -536,25 +535,25 @@ pub fn app_main() {
         app.borrow_mut().as_mut().unwrap().handle_event(cx, event);
     }))));
 
-    // 注册组件、初始化等
+    // Register components, initialize etc.
     $app::register_main_module(&mut *cx.borrow_mut());
     live_design(&mut *cx.borrow_mut());
     cx.borrow_mut().init_cx_os();
 
-    // 启动事件循环
+    // Start event loop
     Cx::event_loop(cx);
 }
 ```
-线程间通信机制：
+Inter-thread communication mechanisms:
 
 ```rust
-// 全局 Action 发送通道
+// Global Action send channel
 static ACTION_SENDER_GLOBAL: Mutex<Option<Sender<ActionSendSync>>> = Mutex::new(None);
 
-// UI 信号机制
+// UI signal mechanism
 pub struct SignalToUI(Arc<AtomicBool>);
 
-// 线程通信 Receiver/Sender
+// Thread communication Receiver/Sender
 pub struct ToUIReceiver<T> {
     sender: Sender<T>,
     pub receiver: Receiver<T>,
@@ -564,32 +563,32 @@ pub struct ToUISender<T> {
     sender: Sender<T>,
 }
 ```
-包含了线程池：
+Thread pools included:
 
 ```rust
-// 标准线程池，用于简单的任务执行
+// Standard thread pool for simple task execution
 pub struct RevThreadPool {
     tasks: Arc<Mutex<Vec<Box<dyn FnOnce() + Send + 'static>>>>,
 }
 
-// 带标签的线程池，用于需要分类和取消的任务
+// Tagged thread pool for tasks that need categorization and cancellation
 pub struct TagThreadPool<T: Clone + Send + 'static + PartialEq> {
     tasks: Arc<Mutex<Vec<(T, Box<dyn FnOnce(T) + Send + 'static>)>>>,
 }
 
-// 消息线程池，用于线程间持续通信
+// Message thread pool for continuous inter-thread communication
 pub struct MessageThreadPool<T: Clone + Send + 'static> {
     sender: Sender<Box<dyn FnOnce(Option<T>) + Send + 'static>>,
     msg_senders: Vec<Sender<T>>,
 }
 ```
-主要通信流:
+Main communication flow:
 
 ```rust
-// 1. 工作线程发送 Action 到主线程
-Cx::post_action(action); // 通过全局 ACTION_SENDER 发送
+// 1. Worker thread sends Action to main thread
+Cx::post_action(action); // Send via global ACTION_SENDER
 
-// 2. 主线程处理接收到的 Action
+// 2. Main thread processes received Actions
 impl Cx {
     pub fn handle_action_receiver(&mut self) {
         while let Ok(action) = self.action_receiver.try_recv() {
@@ -599,19 +598,19 @@ impl Cx {
     }
 }
 
-// 3. UI 状态更新通知
-SignalToUI::set_ui_signal(); // 通知 UI 需要更新
+// 3. UI state update notification
+SignalToUI::set_ui_signal(); // Notify UI that update is needed
 ```
 
-### 事件系统概览
+### Event System Overview
 
-Makepad 提供 Event 机制，用于自底向上传播(由系统/框架分发给组件)来自系统底层的事件(如鼠标、键盘、触摸等)。
+Makepad provides an `Event` mechanism for bottom-up propagation (distributed from system/framework to components) of system-level events (like mouse, keyboard, touch, etc.).
 
-Event 是同步处理的全局性事件。
+Events are synchronously processed global events.
 
 ```rust
 pub enum Event {
-    // 应用生命周期事件
+    // Application lifecycle events
     Startup,
     Shutdown,
     Foreground,
@@ -619,36 +618,36 @@ pub enum Event {
     Resume,
     Pause,
 
-    // UI交互事件
+    // UI interaction events
     Draw(DrawEvent),
     MouseDown(MouseDownEvent),
     MouseMove(MouseMoveEvent),
     KeyDown(KeyEvent),
     TextInput(TextInputEvent),
 
-    // 自定义事件
-    Signal,  // 用于线程间通讯
-    Actions(ActionsBuf), // 自定义动作的容器
-    Timer(TimerEvent),  // 定时器事件
+    // Custom events
+    Signal,  // For inter-thread communication
+    Actions(ActionsBuf), // Container for custom actions
+    Timer(TimerEvent),  // Timer events
 }
 ```
-此外，Makepad 也提供 `Action` 机制，用于自顶向下传播(由组件发送给父组件/监听者)的内部业务动作。
+Additionally, Makepad provides an `Action` mechanism for top-down propagation (sent from components to parent components/listeners) of internal business actions.
 
-这些 `Action` 是可以同步也可以异步。
+These Actions can be either synchronous or asynchronous.
 
-**总结 Event 和 Action 区别**：
+**Summary of Event and Action differences**:
 
-- Event 是系统级别的输入事件，自底而上传播底层事件。
-- Action 是组件级别的业务动作，自顶而下传播业务动作。
+- Events are system-level input events, propagating bottom-up to transmit low-level events.
+- Actions are component-level business actions, propagating top-down to transmit business actions.
 
 ```rust
-// Action 特征定义
+// Action trait definition
 pub trait ActionTrait: 'static {
     fn debug_fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result;
     fn ref_cast_type_id(&self) -> TypeId;
 }
 
-// 具体 Action 示例，定义 Button 的业务代码
+// Concrete Action example, defining Button's business code
 #[derive(Clone, Debug)]
 pub enum ButtonAction {
     Clicked,
@@ -656,35 +655,35 @@ pub enum ButtonAction {
     Released
 }
 ```
-Makepad 通过 `widget_action` 提供了一个统一的 Action 发送和处理机制，并且 Action 可以携带数据和状态。
+Makepad provides a unified Action sending and handling mechanism through `widget_action`, and Actions can carry data and state.
 
 ```rust
-// Action的包装结构
+// Action wrapper structure
 pub struct WidgetAction {
     pub action: Box<dyn WidgetActionTrait>,
-    pub data: Option<Arc<dyn ActionTrait>>, // 关联数据
-    pub widgets: SmallVec<[WidgetRef;4]>, // 发送action的组件引用
-    pub widget_uid: WidgetUid,  // 组件唯一ID
-    pub path: HeapLiveIdPath,   // 组件路径
-    pub group: Option<WidgetActionGroup> // 分组信息
+    pub data: Option<Arc<dyn ActionTrait>>, // Associated data
+    pub widgets: SmallVec<[WidgetRef;4]>, // Widget references sending the action
+    pub widget_uid: WidgetUid,  // Widget unique ID
+    pub path: HeapLiveIdPath,   // Widget path
+    pub group: Option<WidgetActionGroup> // Group information
 }
 
-// Action分组信息
+// Action group information
 pub struct WidgetActionGroup {
     pub group_uid: WidgetUid,
     pub item_uid: WidgetUid,
 }
 ```
-组件通过 `widget_action` 发送 Action：
+Components send Actions through `widget_action`:
 
 ```rust
 impl WidgetActionCxExt for Cx {
-    // 发送一个简单的action
+    // Send a simple action
     fn widget_action(
         &mut self,
-        widget_uid: WidgetUid,  // 组件ID
-        path: &HeapLiveIdPath,  // 组件路径
-        t: impl WidgetActionTrait // Action内容
+        widget_uid: WidgetUid,  // Widget ID
+        path: &HeapLiveIdPath,  // Widget path
+        t: impl WidgetActionTrait // Action content
     ) {
         self.action(WidgetAction {
             widget_uid,
@@ -696,7 +695,7 @@ impl WidgetActionCxExt for Cx {
         })
     }
 
-    // 发送带数据的action
+    // Send action with data
     fn widget_action_with_data(
         &mut self,
         action_data: &WidgetActionData,
@@ -720,7 +719,7 @@ pub struct WidgetActionData{
     data: Option<Arc<dyn ActionTrait>>
 }
 ```
-Action 被收集到 `context` 的 `action buffer` :
+Actions are collected in the `context`'s `action buffer`:
 
 ```rust
 impl Cx {
@@ -729,19 +728,19 @@ impl Cx {
     }
 }
 ```
-接收方获取所有 Actions:
+Receivers get all Actions:
 
 ```rust
-// 捕获某个事件处理过程中产生的所有actions
+// Capture all actions produced during an event handling process
 let actions = cx.capture_actions(|cx| {
     self.button.handle_event(cx, event, scope);
 });
 ```
-再查找特定的 Action :
+Then search for specific Actions:
 
 ```rust
 impl WidgetActionsApi for Actions {
-    // 通过组件路径查找action
+    // Find action by component path
     fn widget_action(&self, path: &[LiveId]) -> Option<&WidgetAction> {
         for action in self {
             if let Some(action) = action.downcast_ref::<WidgetAction>() {
@@ -754,7 +753,7 @@ impl WidgetActionsApi for Actions {
         None
     }
 
-    // 通过组件ID查找action
+    // Find action by component ID
     fn find_widget_action(&self, widget_uid: WidgetUid) -> Option<&WidgetAction> {
         for action in self {
             if let Some(action) = action.downcast_ref::<WidgetAction>() {
@@ -767,10 +766,10 @@ impl WidgetActionsApi for Actions {
     }
 }
 ```
-Action 的类型转换与处理:
+Action type conversion and handling:
 
 ```rust
-// 示例: 处理按钮点击事件
+// Example: Handle button click event
 impl ButtonRef {
     pub fn clicked(&self, actions: &Actions) -> bool {
         if let ButtonAction::Clicked = actions.find_widget_action(self.widget_uid()).cast() {
@@ -780,31 +779,31 @@ impl ButtonRef {
     }
 }
 
-// 使用示例
+// Usage example
 let actions = cx.capture_actions(|cx| {
     self.button.handle_event(cx, event, scope);
 });
 
 if self.button.clicked(&actions) {
-    // 处理点击事件
+    // Handle click event
 }
 ```
-这套机制让 Makepad 的组件能够灵活地进行状态传递和事件通信,同时保持了良好的解耦性和可维护性。
+This mechanism allows Makepad's components to flexibly pass states and communicate events while maintaining good decoupling and maintainability.
 
-### 事件处理流程
+### Event Handling Process
 
-因为 `Widget trait` 中的 `handle_event` 主要关注两个方面:
+Since the `Widget` trait's `handle_event` mainly focuses on two aspects:
 
 ```rust
 impl Widget for MyWidget {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
-        // 1. 处理区域内的命中测试事件(点击、拖拽等)
+        // 1. Handle hit test events within area (clicks, drags, etc.)
         match event.hits(cx, self.area()) {
             Hit::FingerDown(e) => { ... }
             Hit::KeyDown(e) => { ... }
         }
 
-        // 2. 处理动画相关事件
+        // 2. Handle animation-related events
         if self.animator_handle_event(cx, event).must_redraw() {
             self.draw_key.area().redraw(cx)
         }
@@ -812,18 +811,18 @@ impl Widget for MyWidget {
 }
 ```
 
-但实际有很多事件是与 Area 无关的，比如:
+However, there are actually many events that are unrelated to Area, such as:
 
-- 生命周期事件(启动、关闭)
-- 全局事件(前台、后台切换)
-- Action 处理
-- 绘制事件
-- 动画帧更新
+- Lifecycle events (startup, shutdown)
+- Global events (foreground, background switches)
+- Action handling
+- Drawing events
+- Animation frame updates
 
-如果这些事件都在每个 Widget 中处理的话， match event 分支就会很冗余。
+If all these events were handled in each Widget, the match event branches would be very redundant.
 
 ```rust
-// 不用 MatchEvent
+// Without using MatchEvent
 impl Widget for MyWidget {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         match event {
@@ -831,7 +830,7 @@ impl Widget for MyWidget {
             Event::Draw(e) => { ... }
             Event::NextFrame(e) => { ... }
             Event::Actions(e) => { ... }
-            // 还要处理命中测试
+            // Still need to handle hit testing
             _ => match event.hits(cx, self.area()) {
                 Hit::FingerDown(e) => { ... }
             }
@@ -839,8 +838,7 @@ impl Widget for MyWidget {
     }
 }
 ```
-所以，Makepad 提供 `MatchEvent` trait，来提供一系列默认实现的方法，让代码更清晰:
-
+Therefore, Makepad provides the `MatchEvent` trait, which provides a series of default implementations to make the code clearer:
 ```rust
 #[derive(Default)]
 struct MyComplexWidget {
@@ -849,41 +847,41 @@ struct MyComplexWidget {
     animator: Animator
 }
 
-// Widget trait 处理核心交互逻辑
+// Widget trait handles core interaction logic
 impl Widget for MyComplexWidget {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         let uid = self.widget_uid();
 
-        // 1. 动画处理
+        // 1. Animation handling
         if self.animator_handle_event(cx, event).must_redraw() {
             self.redraw(cx);
         }
 
-        // 2. 交互事件处理
+        // 2. Interaction event handling
         match event.hits(cx, self.area) {
             Hit::FingerDown(_) => {
                 self.animator_play(cx, id!(down.on));
                 cx.widget_action(uid, &scope.path, MyAction::Clicked);
             }
             Hit::KeyDown(ke) => {
-                // 键盘事件处理
+                // Keyboard event handling
             }
             _ => ()
         }
 
-        // 3. 使用 MatchEvent 处理其他事件
+        // 3. Use MatchEvent to handle other events
         self.match_event(cx, event);
     }
 }
 
-// MatchEvent trait 处理业务逻辑
+// MatchEvent trait handles business logic
 impl MatchEvent for MyComplexWidget {
-    // 生命周期事件
+    // Lifecycle events
     fn handle_startup(&mut self, cx: &mut Cx) {
-        // 初始化配置
+        // Initialize configuration
     }
 
-    // 状态更新
+    // State updates
     fn handle_actions(&mut self, cx: &mut Cx, actions: &Actions) {
         for action in actions {
             if let MyAction::ValueChanged(new_value) = action.cast() {
@@ -893,45 +891,45 @@ impl MatchEvent for MyComplexWidget {
         }
     }
 
-    // 绘制相关
+    // Drawing related
     fn handle_draw_2d(&mut self, cx: &mut Cx2d) {
-        // 自定义绘制逻辑
+        // Custom drawing logic
     }
 
-    // 动画帧
+    // Animation frames
     fn handle_next_frame(&mut self, cx: &mut Cx, e: &NextFrameEvent) {
-        // 动画更新
+        // Animation updates
     }
 }
 ```
-这样组件就可以专注于实现自己关注的事件处理逻辑，而不用写大量的匹配代码。
+This way components can focus on implementing their own event handling logic without writing lots of matching code.
 
-Makepad 中事件处理优先级如下：
+Event handling priority in Makepad is as follows:
 
-1. 动画事件 (Animator)
-2. 直接交互事件 (Hit)
-3. 通用系统事件 (MatchEvent)
-4. 业务 (Actions)
+1. Animation events (Animator)
+2. Direct interaction events (Hit)
+3. General system events (MatchEvent)
+4. Business Actions
 
-### Signal 机制
+### Signal Mechanism
 
 ```rust
-// UI信号机制
+// UI signal mechanism
 pub struct SignalToUI(Arc<AtomicBool>);
 
 impl SignalToUI {
-    // 设置UI信号
+    // Set UI signal
     pub fn set_ui_signal() {
         UI_SIGNAL.store(true, Ordering::SeqCst)
     }
 
-    // 检查并清除信号
+    // Check and clear signal
     pub fn check_and_clear(&self) -> bool {
         self.0.swap(false, Ordering::SeqCst)
     }
 }
 
-// UI消息通道
+// UI message channel
 pub struct ToUIReceiver<T> {
     sender: Sender<T>,
     pub receiver: Receiver<T>,

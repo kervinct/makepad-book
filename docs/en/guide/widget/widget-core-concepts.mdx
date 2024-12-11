@@ -1,29 +1,29 @@
-# Widget 核心概念
+# Core Concepts
 
-### 与 Widget 的相关的 `trait`
+### Core Widget Traits
 
-#### `WidgetNode`
+#### `WidgetNode` Trait
 
 ```rust
 pub trait WidgetNode: LiveApply {
-    // 一些主要的方法
+    // Main methods
     fn uid_to_widget(&self, uid: WidgetUid) -> WidgetRef;
     fn find_widgets(&self, path: &[LiveId], cached: WidgetCache, results: &mut WidgetSet);
     fn walk(&mut self, cx: &mut Cx) -> Walk;
     fn area(&self) -> Area;
     fn redraw(&mut self, cx: &mut Cx);
-    // 其他默认实现
+    // Other default implementations
 }
 ```
-这是所有 Widget 的基础 trait :
+This is the foundational trait for all Widgets:
 
-- 基于 UID 查找 Widget
-- 基于路径查找 Widgets
-- 计算布局位置大小
-- 管理绘制区域
-- 触发重绘
+- Find Widget based on UID
+- Find Widgets based on path
+- Calculate layout position and size
+- Manage drawing areas
+- Trigger redraws
 
-#### `Widget`
+#### `Widget` Trait
 
 ```rust
 pub type DrawStep = Result<(), WidgetRef>;
@@ -32,18 +32,20 @@ pub trait Widget: WidgetNode {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope);
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep;
 
-    // 其他默认实现
+    // Other default implementations
 }
 ```
 
-该 `trait` 扩展了 `WidgetNode`，增加了:
+This trait extends WidgetNode, adding:
 
-- 事件处理系统
-- 绘制流程控制
+- Event handling system
+- Drawing process control
 
-### Widget 引用与管理
+### Widget References and Management
 
 #### `WidgetRef`
+
+WidgetRef is a smart pointer wrapper for Widgets.
 
 ```rust
 pub struct WidgetRefInner {
@@ -52,26 +54,25 @@ pub struct WidgetRefInner {
 
 pub struct WidgetRef(Rc<RefCell<Option<WidgetRefInner>>>);
 
-// 关键方法
+// Key methods
 impl WidgetRef {
-	// 其他方法
-    // 事件处理
+    // Other methods
+    // Event handling
     pub fn handle_event(&self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         // ...
-
     }
 
-    // 绘制
+    // Drawing
     pub fn draw(&mut self, cx: &mut Cx2d, scope: &mut Scope) -> DrawStep {
         // ...
     }
 
-    // 获取底层Widget的可变引用
+    // Get mutable reference to underlying Widget
     pub fn borrow_mut<T: 'static + Widget>(&self) -> Option<RefMut<'_, T>> {
         // ...
     }
 
-	// 基础查找方法
+    // Basic find method
     pub fn find_widgets(&self, path: &[LiveId], cached: WidgetCache, results: &mut WidgetSet) {
         if let Some(inner) = self.0.borrow().as_ref() {
             inner.widget.find_widgets(path, cached, results)
@@ -79,37 +80,36 @@ impl WidgetRef {
     }
 }
 ```
-- 使用 `Rc<RefCell>` 提供引用计数和内部可变性
-- 支持 `Clone` 和线程安全
-- 通过 `borrow/borrow_mut` 可以安全访问 Widget
+- Uses `Rc<RefCell>` to provide reference counting and interior mutability
+- Supports `Clone` and thread safety
+- Safe Widget access through `borrow/borrow_mut`
 
 #### `WidgetCache`
 
-WidgetCache 是 Makepad UI 框架中重要的性能优化机制，WidgetCache 贯穿整个组件树遍历过程的参数，用于控制各层组件是否启用、清除或绕过缓存。
+WidgetCache is an important performance optimization mechanism in the Makepad UI framework. It's a parameter that traverses the entire component tree, controlling whether components enable, clear, or bypass caching at each layer.
 
-这对于提升大型 UI 的性能很重要，因为它可以:
+This is important for improving large UI performance because it can:
 
-- 避免重复的组件树遍历
-- 在需要时强制获取最新状态
-- 在组件状态变化时清除失效的缓存
+- Avoid repeated component tree traversal
+- Force latest state retrieval when needed
+- Clear invalid caches when component states change
 
 ```rust
-// 典型调用链:
+// Typical call chain:
 widget.widget(&path)
-  -> widget.find_widgets(path, WidgetCache::Yes)  // 高层API默认使用缓存
-    -> child_widget.find_widgets(path, cached)    // 继续向下传递缓存参数
-      -> grandchild.find_widgets(path, cached)    // 缓存策略需要一致
-
+  -> widget.find_widgets(path, WidgetCache::Yes)  // High-level API defaults to using cache
+    -> child_widget.find_widgets(path, cached)    // Continue passing cache parameter down
+      -> grandchild.find_widgets(path, cached)    // Cache strategy needs to be consistent
 ```
 
 #### `WidgetSet`
 
-WidgetSet 是 WidgetRef 的集合。
+WidgetSet is a collection of WidgetRefs.
 
 ```rust
 pub struct WidgetSet(pub SmallVec<[WidgetRef;2]>);
 ```
 
-- 高效管理多个 Widget 引用
-- 支持批量操作和查找
-- 使用 `SmallVec` 优化小规模场景的内存使用
+- Efficiently manages multiple Widget references
+- Supports batch operations and lookups
+- Uses SmallVec to optimize memory usage in small-scale scenarios
