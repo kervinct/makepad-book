@@ -1,4 +1,4 @@
-import { useNavigate } from "rspress/runtime";
+import { normalizeImagePath, useNavigate } from "rspress/runtime";
 import FullyFeatured from "../components/Home/FullyFeatured";
 import Hero from "../components/Home/Hero";
 import { useI18n, useI18nUrl } from "../i18n";
@@ -21,7 +21,7 @@ export function HomeLayout() {
     return (
         <>
             <Hero
-                logo={t('logo')}
+                logo={normalizeImagePath(t('logo'))}
                 title={t('heroTitle')}
                 subTitle={t('heroSlogan')}
                 description={t('heroSubSlogan')}
