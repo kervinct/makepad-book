@@ -104,7 +104,7 @@ fn circle_sdf(pos: vec2, center: vec2, radius: float) -> float {
 ```
 It's useful to think of distance fields as a stack of semi-transparent circles. In this distance field, pure white areas (value of 1) are on the object. Pure black areas are farthest from the object. Gray areas in between have values from 0 to 1. This is a way to visualize distances between 0 and 1.
 
-[](https://trusted-heron-8b2.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fee83deb1-85d6-437c-894c-b4353fce458b%2Fb654cd01-0266-4898-b679-e27e8e801332%2FPasted_image_20241201074137.png?table=block&id=15369449-ef79-80d5-847b-eacab00cc02e&spaceId=ee83deb1-85d6-437c-894c-b4353fce458b&width=900&userId=&cache=v2)
+![](https://trusted-heron-8b2.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fee83deb1-85d6-437c-894c-b4353fce458b%2Fb654cd01-0266-4898-b679-e27e8e801332%2FPasted_image_20241201074137.png?table=block&id=15369449-ef79-80d5-847b-eacab00cc02e&spaceId=ee83deb1-85d6-437c-894c-b4353fce458b&width=900&userId=&cache=v2)
 
 `Signed Distance Fields (SDF)` are three-dimensional scalar fields where each point's value represents the distance to the nearest surface. These distance values have a "signed" characteristic:
 
