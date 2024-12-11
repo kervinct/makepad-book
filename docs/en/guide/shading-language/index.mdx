@@ -1,40 +1,40 @@
-# Shader 基础概念
+# Shader Basic Concepts
 
-`Makepad Shader` 是自定义的 `MPSL` 着色语言。 MPSL 可以生成为 glsl 等着色语言。
+Makepad Shader is a custom MPSL shader language. MPSL can be compiled into shader languages like GLSL.
 
-> 推荐前置知识学习：GLSL 着色器入门教程 https://thebookofshaders.com/?lan=ch
+> Recommended prerequisite learning: GLSL Shader Introduction Tutorial https://thebookofshaders.com/
 
-## 什么是Shader
+## What is a Shader
 
-让我们先从一个简单的比喻开始理解什么是 shader。想象你是一个画家，面前有一块巨大的画布，这个画布被分成了数百万个小格子(像素)。
+Let's begin understanding shaders with a simple analogy. Imagine you're a painter facing an enormous canvas divided into millions of tiny squares (pixels).
 
-现在你有两个任务：
+You have two tasks:
 
-1. 决定每个形状的位置和大小（顶点着色器）
-2. 决定每个格子应该填充什么颜色（像素/片元着色器）
+1. Determine the position and size of each shape (Vertex Shader)
+2. Decide what color to fill in each square (Fragment/Pixel Shader)
 
 ```rust
-// 一个最基础的 Makepad shader
+// A basic Makepad shader
 MyFirstShader = {{MyFirstShader}} {
-    // 1. 顶点着色器 - 处理位置
+    // 1. Vertex shader - handles position
     fn vertex(self) -> vec4 {
-        // 将形状放在正确的位置
+        // Place the shape in the correct position
         let position = self.geom_pos * self.rect_size + self.rect_pos;
         return self.camera_projection * vec4(position, 0.0, 1.0);
     }
 
-    // 2. 片元着色器 - 处理颜色
+    // 2. Fragment shader - handles color
     fn pixel(self) -> vec4 {
-        // 给每个像素上色
-        return vec4(1.0, 0.0, 0.0, 1.0); // 红色
+        // Color each pixel
+        return vec4(1.0, 0.0, 0.0, 1.0); // Red
     }
-};
+}
 ```
 
-让我们可视化一下这个过程：
+Let's visualize this process:
 
 ```plaintext
-顶点着色阶段:                像素着色阶段:
+Vertex Shader Stage:          Pixel Shader Stage:
 
    P1●─────●P2                 ░░░░░░░░
      │     │                   ░██████░
@@ -42,84 +42,82 @@ MyFirstShader = {{MyFirstShader}} {
      │     │                   ░██████░
    P3●─────●P4                 ░░░░░░░░
 
- (确定形状位置)              (填充每个像素)
+(Determine shape position)    (Fill each pixel)
 ```
 
-## GPU vs CPU 渲染的区别
+## GPU vs CPU Rendering Differences
 
-为什么要用GPU渲染？让我们通过一个实例来理解。
+Why use GPU rendering? Let's understand through an example:
 
-假设要渲染一个 1000x1000 像素的区域：
+Imagine rendering a 1000×1000 pixel area:
 
 ```plaintext
-CPU 渲染:
-- 依次处理每个像素
-- 100万个像素需要依次处理
-- 类似于用一个画笔一点点填充
+CPU Rendering:
+- Process each pixel sequentially
+- 1 million pixels processed one at a time
+- Similar to filling with a single brush
 
-GPU 渲染:
-- 大量像素并行处理
-- 100万个像素可以同时处理
-- 类似于用喷枪快速覆盖
+GPU Rendering:
+- Process many pixels in parallel
+- 1 million pixels processed simultaneously
+- Similar to covering with a spray gun
 ```
-视觉化表示:
+Visual representation::
 
 ```plaintext
-CPU 渲染进度:              GPU 渲染进度:
-█░░░░░░░░░  10%          ▒▒▒▒▒▒▒▒▒▒  100%
-██░░░░░░░░  20%          (同时处理)
+CPU Rendering Progress:      GPU Rendering Progress:
+█░░░░░░░░░  10%              ▒▒▒▒▒▒▒▒▒▒  100%
+██░░░░░░░░  20%              (Processed simultaneously)
 ███░░░░░░░  30%
 ...
-██████████  100%
 ```
-本质上是为了提升性能，GPU 是一个专门用于图形渲染的硬件，它可以同时处理大量像素，因此比 CPU 更适合渲染图形。
 
-## 坐标系统详解
+## Coordinate Systems in Detail
 
-在 Makepad 中，我们需要处理三种主要的坐标系统:
+In Makepad, we need to work with three main coordinate systems:
 
-### `归一化设备坐标(NDC)`
+### `Normalized Device Coordinates (NDC)`
 
-[-1,1]范围，提供设备无关的标准化空间，确保渲染结果在不同分辨率下保持一致。
+Range [-1,1], provides device-independent standardized space, ensuring consistent rendering results across different resolutions.
 
-- 使用场景：当你需要进行设备无关的渲染或者处理3D变换时。
-- 比如：3D渲染、视图裁剪、透视投影、跨设备一致性渲染等。
+- Use cases: When you need device-independent rendering or handling 3D transformations.
+- Examples: 3D rendering, view clipping, perspective projection, cross-device consistent rendering.
 
-### `像素坐标`
+### `Pixel Coordinates`
 
-实际屏幕像素，用于精确定位屏幕上的实际位置，直接对应物理显示设备。
+ Actual screen pixels, used for precise positioning on screen, directly corresponding to physical display devices.
 
-- 使用场景：当你需要精确控制渲染目标在屏幕上的确切位置时。
-- 比如：UI元素的精确定位、像素边框的绘制、文本渲染的对齐等。
+- Use cases: When you need precise control over rendering target positions on screen.
+- Examples: Precise UI element positioning, pixel border drawing, text rendering alignment.
 
-### `UV 坐标`：
+### `UV Coordinates`：
 
-[0,1]范围的纹理坐标，用于纹理映射和参数化表面， 提供独立于分辨率的相对位置。
+Range [0,1] texture coordinates, used for texture mapping and parametric surfaces, providing resolution-independent relative positioning.
 
-- 使用场景：当你需要处理纹理映射或者创建参数化的视觉效果时。
-- 比如：纹理映射、渐变效果、UV动画、程序化纹理生成、参数化形状等。
+- Use cases: When you need to handle texture mapping or create parametric visual effects.
+- Examples: Texture mapping, gradient effects, UV animation, procedural texture generation, parametric shapes.
 
-### 代码和图示来理解坐标转换
+### Code and diagrams to understand coordinate conversions
 
 ```rust
-让我们通过代码和图示来理解坐标转换:
 fn vertex(self) -> vec4 {
-    // 1. 几何坐标到像素坐标的映射
+    // 1. Mapping from geometric coordinates to pixel coordinates
     let pixel_pos = self.geom_pos * self.rect_size + self.rect_pos;
 
-    // 2. 像素坐标到 UV 坐标的映射
+    // 2. Mapping from pixel coordinates to UV coordinates
     self.uv = (pixel_pos - self.rect_pos) / self.rect_size;
 
-    // 3. 像素坐标到 NDC 的映射
+    // 3. Mapping from pixel coordinates to NDC
     let ndc = self.camera_projection * vec4(pixel_pos, 0.0, 1.0);
 
     return ndc;
 }
 ```
-坐标系统的可视化:
+Coordinate system visualization:
 
 ```plaintext
-归一化设备坐标(NDC)      像素坐标            UV坐标
+Normalized Device         Pixel               UV
+Coordinates (NDC)      Coordinates         Coordinates
      (-1,1)            (0,0)              (0,0)
         ┃               ┃                   ┃
         ┃               ┃                   ┃
@@ -129,9 +127,9 @@ fn vertex(self) -> vec4 {
      (1,-1)         (width,            (1,1)
                     height)
 
-坐标映射流程图:
+Coordinate mapping flowchart:
 
-像素坐标 (100, 100)            UV坐标 (0.5, 0.5)           NDC (0.0, 0.0)
+Pixel Coords (100, 100)         UV Coords (0.5, 0.5)         NDC (0.0, 0.0)
     ┌──────────┐               ┌──────────┐               ┌──────────┐
     │(0,0)     │     ÷size     │(0,0)     │    *2-1       │(-1,1)    │
     │          │ ────────────► │          │ ────────────► │          │
@@ -140,51 +138,49 @@ fn vertex(self) -> vec4 {
     │     (w,h)│               │     (1,1)│               │    (1,-1)│
     └──────────┘               └──────────┘               └──────────┘
 
-
-需求判断：
+Requirements Decision:
 ┌────────────────────┐
-│ 是否需要像素精度？    │
+│Need pixel precision?│
 └─────────┬──────────┘
           │
     ┌─────┴─────┐
     │   Yes     │     No
     ▼           ▼
-像素坐标     ┌──────────────┐
-            | 是否需要纹理   |
-            │   或渐变？    │
-            └──────┬───────┘
-                   │
-              ┌────┴────┐
-              │  Yes    │     No
-              ▼         ▼
-           UV坐标    NDC坐标
-
+Pixel      ┌──────────────┐
+Coords     │Need texture  │
+           │or gradients? │
+           └──────┬───────┘
+                  │
+             ┌────┴────┐
+             │  Yes    │     No
+             ▼         ▼
+          UV Coords  NDC Coords
 ```
-## 颜色与像素
+## Colors and Pixels
 
-在 Makepad 中，颜色使用 vec4 表示，包含 RGBA 四个通道:
+In Makepad, colors are represented using `vec4`, containing four RGBA channels:
 
 ```rust
 fn pixel(self) -> vec4 {
-    //---------- 红   绿   蓝   透明度
-    return vec4(1.0, 0.0, 0.0, 1.0);
+    //---------- Red  Green Blue Alpha
+    return vec4(1.0, 0.0,  0.0,  1.0);
 }
 ```
-颜色混合示意:
+Color blending illustration:
 
 ```plaintext
-基础颜色:           透明度混合:
-Red   (1,0,0)      ██ 不透明 (alpha = 1.0)
-Green (0,1,0)  +   ▒▒ 半透明 (alpha = 0.5)
-Blue  (0,0,1)      ░░ 透明   (alpha = 0.0)
+Base Colors:          Alpha Blending:
+Red   (1,0,0)        ██ Opaque    (alpha = 1.0)
+Green (0,1,0)  +     ▒▒ Semi-transparent (alpha = 0.5)
+Blue  (0,0,1)        ░░ Transparent (alpha = 0.0)
 ```
 
-预乘Alpha的概念：
+The concept of Premultiplied Alpha:
 
 ```rust
-// 普通 RGBA
-vec4(1.0, 0.0, 0.0, 0.5) // 半透明红色
+// Regular RGBA
+vec4(1.0, 0.0, 0.0, 0.5) // Semi-transparent red
 
-// 预乘 Alpha (推荐)
-vec4(0.5, 0.0, 0.0, 0.5) // RGB 通道已乘以 alpha
+// Premultiplied Alpha (recommended)
+vec4(0.5, 0.0, 0.0, 0.5) // RGB channels already multiplied by alpha
 ```

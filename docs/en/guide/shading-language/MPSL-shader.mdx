@@ -1,328 +1,324 @@
-# MPSL Shader 基本语法
+# MPSL Shader Basic Syntax
 
-## MPSL 语法和 Rust 语法的区别
+## Differences Between MPSL and Rust Syntax
 
-MPSL 着色器语言与 Rust 语言的写法类似，但它们也有一些本质区别。
+While MPSL shader language has similar syntax to Rust, there are some fundamental differences between them.
 
-### 类型系统的区别
+### Type System Differences
 
-MPSL 的类型系统更简单且专注于图形计算：
+MPSL's type system is simpler and focused on graphics computation:
 
 ```rust
-// Rust 的类型系统
+// Rust type system
 let x: i32 = 42;
 let y: f64 = 3.14;
 let v: Vec<i32> = vec![1, 2, 3];
 
-// MPSL 的类型系统
+// MPSL type system
 let x: float = 42.0;
 let v: vec4 = vec4(1.0, 0.0, 0.0, 1.0);
 ```
 
-MPSL 主要关注图形相关的基本类型：`float`、`vec2`、`vec3`、`vec4`、`mat4`等，而不支持 Rust 中的复杂数据结构如 `Vec`、`HashMap` 等。这种简化是为了适应 GPU 的计算特点。
+MPSL primarily focuses on graphics-related basic types like `float`, `vec2`, `vec3`, `vec4`, `mat4`, etc., and doesn't support complex data structures like Vec, HashMap that exist in Rust. This simplification is designed to match GPU computing characteristics.
 
-### 内存管理的区别
+### Memory Management
 
-Rust 的所有权系统、默认不可变等在 MPSL 中完全不存在：
+Rust's ownership system and default immutability are completely absent in MPSL:
 
 ```rust
-// Rust 中的所有权和借用
+// Ownership and borrowing in Rust
 let mut s = String::from("hello");
-let r = &mut s;  // 可变借用
+let r = &mut s;  // Mutable borrow
 r.push_str(" world");
 
-// MPSL 中简单的值传递，默认可变
+// Simple value passing in MPSL, default mutable
 let color = vec4(1.0, 0.0, 0.0, 1.0);
-let modified = color * 0.5;  // 直接操作，没有所有权概念
+let modified = color * 0.5;  // Direct operation, no ownership concept
 ```
-MPSL 不需要考虑内存管理，因为着色器程序的生命周期是由 GPU 执行过程控制的。
+MPSL doesn't need to consider memory management because shader program lifecycles are controlled by GPU execution processes.
 
-### 函数定义和使用
+### Function Definition and Usage
 
-MPSL 的函数系统更简单，主要围绕着顶点和像素着色：
+MPSL's function system is simpler, primarily centered around vertex and pixel shading:
 
 ```rust
-// Rust 函数定义
+// Rust function definition
 fn calculate_sum(a: i32, b: i32) -> i32 {
     a + b
 }
 
-// MPSL 着色器函数
+// MPSL shader functions
 fn vertex(self) -> vec4 {
-    // 必须返回裁剪空间坐标
+    // Must return clip space coordinates
     return self.transform_position();
 }
 
 fn pixel(self) -> vec4 {
-    // 必须返回颜色值
+    // Must return color value
     return self.color;
 }
 ```
-MPSL 的 self 参数是特殊的，它包含了着色器的上下文信息，这与 Rust 的 self 概念有很大不同。
+MPSL's self parameter is special, containing shader context information, which is quite different from Rust's self concept.
 
-### 变量作用域
+### Variable Scope
 
-MPSL 引入了特殊的变量作用域概念：
+MPSL introduces special variable scope concepts:
 
 ```rust
-// MPSL 特有的变量声明
-instance border_width: float  // 实例变量
-varying pos: vec2            // 顶点到像素着色器传递的变量
-uniform time: float          // 统一变量
+// MPSL-specific variable declarations
+instance border_width: float  // Instance variable
+varying pos: vec2            // Variable passed from vertex to pixel shader
+uniform time: float          // Uniform variable
 
-// Rust 中的变量声明
-let border_width: f32 = 1.0;  // 普通变量
-static TIME: f32 = 0.0;       // 静态变量
+// Rust variable declarations
+let border_width: f32 = 1.0;  // Regular variable
+static TIME: f32 = 0.0;       // Static variable
 ```
+These special variable types reflect characteristics of the graphics rendering pipeline, concepts that don't exist in Rust.
 
-这些特殊的变量类型反映了图形渲染管线的特点，在 Rust 中并不存在这样的概念。
+### Control Flow Structures
 
-### 控制流结构
-
-MPSL 的控制流更受限：
+MPSL has more limited control flow:
 
 ```rust
-// Rust 的灵活控制流
+// Rust's flexible control flow
 match value {
     0 => println!("zero"),
     1 => println!("one"),
     _ => println!("other"),
 }
 
-// MPSL 的简化控制流
+// MPSL's simplified control flow
 if value < 0.5 {
     return vec4(1.0, 0.0, 0.0, 1.0);
 } else {
     return vec4(0.0, 1.0, 0.0, 1.0);
 }
 ```
-MPSL 不支持 `match`、`loop` 等 Rust 的高级控制流结构，主要是因为 GPU 执行模型的限制。
+MPSL doesn't support advanced control flow structures like `match`, `loop`, etc., that exist in Rust, primarily due to GPU execution model limitations.
 
-### 特殊功能支持
+### Special Feature Support
 
-MPSL 包含了专门的图形处理功能：
+MPSL includes specialized graphics processing features:
 
 ```rust
-// MPSL 的 SDF 功能
+// MPSL's SDF functionality
 fn pixel(self) -> vec4 {
     let sdf = Sdf2d::viewport(self.pos * self.rect_size);
     sdf.circle(100.0, 100.0, 50.0);
     return sdf.fill(self.color);
 }
 
-// Rust 中需要使用外部库实现类似功能
-use graphics_lib::draw_circle;  // 假设的图形库
+// Rust would need external libraries for similar functionality
+use graphics_lib::draw_circle;  // Hypothetical graphics library
 ```
 
-这些内置的图形处理功能是 MPSL 的特色，在 Rust 中通常需要依赖外部库。
+These built-in graphics processing features are characteristic of MPSL; in Rust, you typically need to rely on external libraries.
 
-### 错误处理
+### Error Handling
 
-错误处理方式有很大差异：
+Error handling approaches differ significantly:
 
 ```rust
-// Rust 的错误处理
+// Error handling in Rust
 fn process() -> Result<i32, Error> {
     let value = some_operation()?;
     Ok(value)
 }
 
-// MPSL 基本没有错误处理
+// MPSL basically has no error handling
 fn pixel(self) -> vec4 {
-    // 着色器执行失败时会直接停止
+    // Shader execution simply stops on failure
     let color = self.compute_color();
     return color;
 }
 ```
-MPSL 没有 Result 和 Option 类型，也不需要错误处理机制，因为着色器程序要求必须能够正确执行。
+MPSL has no `Result` or `Option` types and doesn't need error handling mechanisms, as shader programs must execute correctly.
 
-## MPSL 基本语法
+## MPSL Basic Syntax
 
-### 基本程序结构
+### Basic Program Structure
 
-MPSL 的着色器程序主要由以下部分组成：
+MPSL shader programs primarily consist of these parts:
 
 ```rust
-// 顶点着色器
+// Vertex shader
 fn vertex(self) -> vec4 {
-    // 返回裁剪空间坐标
+    // Returns clip space coordinates
     return self.clip_and_transform_vertex(self.rect_pos, self.rect_size);
 }
 
-// 片段(像素)着色器
+// Fragment (pixel) shader
 fn pixel(self) -> vec4 {
-    // 返回RGBA颜色值
+    // Returns RGBA color value
     return self.color;
 }
 ```
 
 
-### 数据类型
+### Data Types
 
-MPSL 提供了以下基本数据类型：
+MPSL provides the following basic data types:
 
 ```rust
-// 标量类型
-float           // 浮点数
-int             // 整数
-bool            // 布尔值
+// Scalar types
+float           // Floating point number
+int             // Integer
+bool            // Boolean value
 
-// 向量类型
-vec2            // 2维向量 (x,y)
-vec3            // 3维向量 (x,y,z)
-vec4            // 4维向量 (x,y,z,w) 常用于颜色(r,g,b,a)
+// Vector types
+vec2            // 2D vector (x,y)
+vec3            // 3D vector (x,y,z)
+vec4            // 4D vector (x,y,z,w) commonly used for color (r,g,b,a)
 
-// 矩阵类型
-mat4            // 4x4矩阵
+// Matrix types
+mat4            // 4x4 matrix
 
-// 采样器类型
-texture2d       // 2D纹理
-textureOES      // 外部纹理(视频等)
+// Sampler types
+texture2d       // 2D texture
+textureOES      // External texture (video etc.)
 ```
-### 变量声明
+### Variable Declaration
 
 ```rust
-// 实例变量 - 可以针对每个绘制实例更改
+// Instance variables - can be changed for each draw instance
 instance border_width: float
 instance color: vec4
 
-// varying变量 - 在顶点和像素着色器之间传递数据
+// Varying variables - pass data between vertex and pixel shaders
 varying pos: vec2
 
-// uniform变量 - 全局统一的值
+// Uniform variables - globally uniform values
 uniform time: float
 
-// 纹理声明
+// Texture declaration
 texture tex: texture2d
 ```
 
-### 内置函数
+### Built-in Functions
 
 ```rust
-// 数学函数
-sin(x)          // 正弦
-cos(x)          // 余弦
-pow(x,y)        // x的y次方
-sqrt(x)         // 平方根
-mix(x,y,a)      // 线性插值
-clamp(x,min,max) // 范围限制
+// Mathematical functions
+sin(x)          // Sine
+cos(x)          // Cosine
+pow(x,y)        // x to the power of y
+sqrt(x)         // Square root
+mix(x,y,a)      // Linear interpolation
+clamp(x,min,max) // Range limitation
 
-// 纹理采样
-sample2d(tex, uv)         // 2D纹理采样
-sample2d_rt(tex, uv)      // 渲染目标纹理采样
-sample2dOES(tex, uv)      // 外部纹理采样
+// Texture sampling
+sample2d(tex, uv)         // 2D texture sampling
+sample2d_rt(tex, uv)      // Render target texture sampling
+sample2dOES(tex, uv)      // External texture sampling
 ```
 
-### SDF（有符号距离场）
+### SDF (Signed Distance Field)
 
-MPSL 提供了强大的 SDF 功能用于形状绘制：
+MPSL provides powerful SDF functionality for shape drawing
 
 ```rust
-// 创建SDF视口
+// Create SDF viewport
 let sdf = Sdf2d::viewport(self.pos * self.rect_size);
 
-// 基本形状
-sdf.circle(x, y, radius)              // 圆形
-sdf.box(x, y, width, height, radius)  // 圆角矩形
-sdf.rect(x, y, width, height)         // 矩形
+// Basic shapes
+sdf.circle(x, y, radius)              // Circle
+sdf.box(x, y, width, height, radius)  // Rounded rectangle
+sdf.rect(x, y, width, height)         // Rectangle
 
-// 操作
-sdf.fill(color)           // 填充
-sdf.fill_keep(color)      // 填充并保留形状
-sdf.stroke(color, width)  // 描边
+// Operations
+sdf.fill(color)           // Fill
+sdf.fill_keep(color)      // Fill and preserve shape
+sdf.stroke(color, width)  // Stroke
 ```
 
-### 控制流语句
+### Control Flow Statements
 
 ```rust
-// 条件语句
+// Conditional statements
 if condition {
-    // 代码块
+    // Code block
 } else {
-    // 代码块
+    // Code block
 }
 
-// 循环
+// Loops
 for i in 0..count {
-    // 循环体
+    // Loop body
 }
 
-// 提前返回
+// Early return
 return value;
 ```
 
-### 着色器属性
+###  Shader Attributes
 
 ```rust
 draw_bg: {
-    // 可用的形状类型
-    shape: Solid,          // 实心形状
-    shape: Rectangle,      // 矩形
-    shape: Circle,         // 圆形
-    shape: RoundedRect,    // 圆角矩形
+    // Available shape types
+    shape: Solid,          // Solid shape
+    shape: Rectangle,      // Rectangle
+    shape: Circle,         // Circle
+    shape: RoundedRect,    // Rounded rectangle
 
-    // 基本填充类型
-    fill: Color,           // 纯色填充
-    fill: Texture,         // 纹理填充
-    fill: Pattern,         // 图案填充
-    fill: Gradient,        // 渐变填充
-
+    // Basic fill types
+    fill: Color,           // Solid color fill
+    fill: Texture,         // Texture fill
+    fill: Pattern,         // Pattern fill
+    fill: Gradient,        // Gradient fill
 }
 ```
 
-:::tip 说明
+:::tip Note:
 
-- shape 和 fill 属性更像是一种声明式的标记，告诉系统和其他开发者这个着色器的意图
-- 实际的绘制效果需要在 pixel 函数中通过 SDF API 来实现
+- shape and fill properties are more like declarative markers, informing the system and other developers of the shader's intent
+- The actual drawing effect needs to be implemented through SDF API in the pixel function
 
 :::
 
-### 实践示例
+### Practical Example
 
-一个完整的圆角矩形着色器示例：
+A complete rounded rectangle shader example:
 
 ```rust
-// 1. 圆角矩形
+// 1. Rounded Rectangle
 shapes = <View> {
+    show_bg: true,  // Enable background drawing
+    draw_bg: {      // Main shader configuration
+        // Instance variables that can be modified per instance
+        instance stroke_width: 1.0    // Stroke width
+        instance border_width: 2.0    // Border width
+        instance border_color: #000   // Border color
+        instance fill_color: #f00f    // Fill color
 
-	show_bg: true,  // 启用背景绘制
-    draw_bg: {      // 主要的着色器配置
-        // 可以针对每个实例修改的实例变量
-        instance stroke_width: 1.0    // 描边宽度
-        instance border_width: 2.0    // 边框宽度
-        instance border_color: #000   // 边框颜色
-        instance fill_color: #f00f    // 填充颜色
+        // Helper function: create rounded rectangle
+        fn rounded_rectangle(self) -> vec4 {
+            // Create a 2D signed distance field viewport, mapped to our rectangle size
+            let sdf = Sdf2d::viewport(self.pos * self.rect_size);
 
-		// 辅助函数：创建圆角矩形
-		fn rounded_rectangle(self) -> vec4 {
-		    // 创建一个2D有符号距离场视口，映射到我们的矩形尺寸
-		    let sdf = Sdf2d::viewport(self.pos * self.rect_size);
+            // Draw a box (rounded rectangle), parameters are:
+            sdf.box(
+                0.0,                // x position (left edge)
+                0.0,                // y position (top edge)
+                self.rect_size.x,   // rectangle width
+                self.rect_size.y,   // rectangle height
+                10.0               // corner radius - makes corners round
+            );
 
-		    // 绘制一个盒子（圆角矩形），参数依次为：
-		    sdf.box(
-		        0.0,                // x位置（左边缘）
-		        0.0,                // y位置（顶边缘）
-		        self.rect_size.x,   // 矩形宽度
-		        self.rect_size.y,   // 矩形高度
-		        10.0               // 圆角半径 - 使角落变圆
-		    );
+            // Fill shape with fill_color while preserving SDF for border drawing
+            sdf.fill_keep(self.fill_color);
 
-		    // 用fill_color填充形状，同时保留SDF用于边框绘制
-		    sdf.fill_keep(self.fill_color);
+            // Add border with specified color and width
+            sdf.stroke(self.border_color, self.border_width);
 
-		    // 添加指定颜色和宽度的边框
-		    sdf.stroke(self.border_color, self.border_width);
+            // Return final composite color result
+            return sdf.result;
+        }
 
-		    // 返回最终合成的颜色结果
-		    return sdf.result;
-		}
-
-		// 主像素着色器函数
-		fn pixel(self) -> vec4 {
-			// 必须加 return
-			return self.rounded_rectangle();
-
-		}
-	}
+        // Main pixel shader function
+        fn pixel(self) -> vec4 {
+            // Must include return
+            return self.rounded_rectangle();
+        }
+    }
 }
 ```
