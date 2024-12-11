@@ -20,7 +20,7 @@ export function useI18nUrl() {
 
     const tUrl = useCallback(
         (url: string) => {
-        return lang === 'en' ? url : `/${lang}${url}`;
+        return withBase(lang === 'en' ? url : `/${lang}${url}`);
         },
         [lang],
     );

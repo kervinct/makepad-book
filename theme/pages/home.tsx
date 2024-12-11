@@ -11,24 +11,24 @@ export function HomeLayout() {
 
     const navigate = useNavigate();
     const handleClickGetStarted = useCallback(() => {
-      navigate(tUrl('/makepad-book/guide/start/introduction'));
+      navigate(tUrl('/guide/start/introduction'));
     }, [tUrl, navigate]);
 
-    const handleClickLearnMore = useCallback(() => {
-      navigate(tUrl('/makepad-book/guide/start/introduction'));
-    }, [tUrl, navigate]);
+    // const handleClickLearnMore = useCallback(() => {
+    //   navigate(tUrl('/guide/start/introduction'));
+    // }, [tUrl, navigate]);
 
     return (
         <>
             <Hero
-                logo="/robius-logo-680.png"
+                logo={t('logo')}
                 title={t('heroTitle')}
                 subTitle={t('heroSlogan')}
                 description={t('heroSubSlogan')}
                 getStartedButtonText={t('getStarted')}
-                learnMoreButtonText={t('learnMore')}
                 onClickGetStarted={handleClickGetStarted}
-                onClickLearnMore={handleClickLearnMore}
+                // learnMoreButtonText={t('learnMore')}
+                // onClickLearnMore={handleClickLearnMore}
             />
             <FullyFeatured />
         </>

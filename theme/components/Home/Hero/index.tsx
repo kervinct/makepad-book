@@ -7,10 +7,10 @@ export interface HeroProps {
     title: string;
     subTitle: string;
     description: string;
-    getStartedButtonText: string;
-    learnMoreButtonText: string;
-    onClickGetStarted: () => void;
-    onClickLearnMore: () => void;
+    getStartedButtonText?: string;
+    learnMoreButtonText?: string;
+    onClickGetStarted?: () => void;
+    onClickLearnMore?: () => void;
 }
 
 const Hero = memo(({
@@ -40,14 +40,5 @@ const Hero = memo(({
     </section>
   );
 });
-
-{/* <BaseHero
-    showStars
-    title="Makepad Book"
-    subTitle="Blazingly Fast Cross Platform Rust UIs"
-    description="Make with Rust, Pad your UI with smoothness"
-    getStartedButtonText="Get Started"
-    learnMoreButtonText="Learn More"
-/> */}
 
 export default Hero;
