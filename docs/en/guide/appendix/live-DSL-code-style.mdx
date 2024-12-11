@@ -1,11 +1,11 @@
-# Live DSL 建议编码规范
+# Live DSL Coding Guideline
 
-## 命名规范
+## Naming Conventions
 
-### 组件类型命名
+### Component Type Naming
 
-- 使用 PascalCase(大驼峰)命名组件类型
-- 以功能性名词命名，表明语义
+- Use PascalCase for component types
+- Name with functional nouns that indicate semantics
 
 ```rust
 // Good
@@ -18,18 +18,18 @@ button = {{button}} { }
 dropdownlist = {{dropdownlist}} { }
 scroll_view = {{scroll_view}} { }
 ```
-### 实例属性命名
+### Instance Property Naming
 
-- 当实例是可复用、需要引用的UI组件时,使用 PascalCase
-- 当实例是布局容器或装饰性元素时,使用 snake_case
+- Use PascalCase when the instance is a reusable UI component that needs referencing
+- Use snake_case when the instance is a layout container or decorative element
 
 ```rust
 Dialog = {{Dialog}} {
-    // 可交互、需要引用的组件用 PascalCase
+    // Use PascalCase for interactive components that need referencing
     OkButton = <Button> { }
     CancelButton = <Button> { }
 
-    // 布局容器用 snake_case
+    // Use snake_case for layout containers
     content_area = <View> {
         header = <View> { }
         body = <View> { }
@@ -37,9 +37,9 @@ Dialog = {{Dialog}} {
     }
 }
 ```
-### 字段属性命名
+### Field Property Naming
 
-使用 `snake_case` 命名所有字段属性
+Use snake_case for all field properties
 
 ```rust
 Button = {{Button}} {
@@ -47,7 +47,6 @@ Button = {{Button}} {
     background_color: #fff,
     border_width: 1.0,
     corner_radius: 4.0,
-
     // Bad
     backgroundColor: #fff,
     BorderWidth: 1.0,
@@ -55,12 +54,12 @@ Button = {{Button}} {
 }
 ```
 
-## 缩进和空格
+## Indentation and Spacing
 
-### 缩进
+### Indentation
 
-- 使用 4 个空格进行缩进
-- 每个嵌套层级增加一级缩进
+- Use 4 spaces for indentation
+- Increase indentation level for each nesting level
 
 ```rust
 Container = {{View}} {
@@ -77,27 +76,27 @@ Container = {{View}} {
 }
 ```
 
-### 空格和换行
+### Spacing and Line Breaks
 
-- 属性冒号后加一个空格
-- 大括号前后各加一个空格
-- 实例定义之间用空行分隔
-- 相关的字段属性可以组合在一起
+- Add one space after property colons
+- Add one space before and after curly braces
+- Separate instances with blank lines
+- Group related field properties together
 
 ```rust
 Container = {{View}} {
-    // 布局相关属性组合在一起
+    // Layout-related properties grouped together
     width: Fill,
     height: Fill,
     flow: Down,
     spacing: 10,
 
-    // 视觉相关属性组合在一起
+    // Visual-related properties grouped together
     background_color: #fff,
     border_width: 1.0,
     corner_radius: 4.0,
 
-    // 子实例之间空行分隔
+    // Separate child instances with blank lines
     Header = <View> {
         height: 60
     }
@@ -113,95 +112,94 @@ Container = {{View}} {
 ```
 
 
-## 属性排序
+## Property Ordering
 
-建议按以下顺序组织属性:
+It is recommended to organize properties in the following order:
 
-1. 布局属性(width, height, margin等)
-2. 视觉属性(color, border等)
-3. 行为属性(cursor, grab_key_focus等)
-4. 动画属性(animator)
-5. 子组件实例
+1. Layout properties (width, height, margin, etc.)
+2. Visual properties (color, border, etc.)
+3. Behavioral properties (cursor, grab_key_focus, etc.)
+4. Animation properties (animator)
+5. Child component instances
 
 ```rust
 Button = {{Button}} {
-    // 1. 布局属性
+    // 1. Layout properties
     width: 100,
     height: 40,
     margin: {left: 10, right: 10},
 
-    // 2. 视觉属性
+    // 2. Visual properties
     background_color: #fff,
     border_width: 1.0,
     corner_radius: 4.0,
 
-    // 3. 行为属性
+    // 3. Behavioral properties
     cursor: Pointer,
     grab_key_focus: true,
 
-    // 4. 动画属性
+    // 4. Animation properties
     animator: {
         hover = {
             default: off
         }
     },
 
-    // 5. 子组件实例
+    // 5. Child component instances
     Icon = <Icon> { },
 
     Label = <Label> { }
 }
 ```
 
-## 组件结构
+## Component Structure
 
-### 基础组件定义
+### Basic Component Definition
 
-- 基础组件使用双大括号语法
-- 组件名和实现需一致
+- Use double curly brace syntax for basic components
+- Component name must match implementation
 
 ```rust
-// 基础组件定义
+// Basic component definition
 Button = {{Button}} { }
 Label = {{Label}} { }
 ```
 
-### 组件继承和组合
+### Component Inheritance and Composition
 
-- 继承使用尖括号语法
-- 组合使用实例属性
+- Use angle bracket syntax for inheritance
+- Use instance properties for composition
 
 ```rust
-// 继承
+// Inheritance
 PrimaryButton = <Button> {
     background_color: #2196f3
 }
-
-// 组合
+// Composition
 CardView = {{View}} {
     header = <View> { }
     content = <View> { }
 }
 ```
 
-## 注释规范
+## Comment Standards
 
-### 组件注释
+### Component Comments
 
-- 在组件定义前添加说明性注释
-- 说明组件的用途和重要属性
+- Add descriptive comments before component definitions
+- Explain component purpose and important properties
 
 ```rust
-// 主要操作按钮
-// 支持 size: small | medium | large
-// 支持 variant: contained | outlined | text
+// Primary action button
+// Supports size: small | medium | large
+// Supports variant: contained | outlined | text
 PrimaryButton = <Button> {
     background_color: #2196f3
 }
 ```
-### 分组注释
+### Group Comments
 
-- 使用注释对相关属性进行分组
+- Use comments to group related properties
 
 ```rust
 Dialog = {{Dialog}} {
@@ -219,22 +217,21 @@ Dialog = {{Dialog}} {
 }
 ```
 
-## 模式和最佳实践
+## Patterns and Best Practices
 
-### 可复用组件
+### Reusable Components
 
-- 抽取可复用的样式和布局为单独的组件
-- 使用继承扩展基础组件
+- Extract reusable styles and layouts into separate components
+- Use inheritance to extend base components
 
 ```rust
-// 基础卡片组件
+// Base card component
 Card = {{View}} {
     background_color: #fff,
     corner_radius: 4.0,
     shadow_color: #0007
 }
-
-// 特定用途的卡片
+// Specific purpose card
 ProductCard = <Card> {
     width: 200,
     height: 300
