@@ -1,5 +1,10 @@
 [
     {
+        "text": "guide",
+        "link": "/guide/start/introduction",
+        "activeMatch": "/guide/"
+    },
+    {
         "text": "online-salon",
         "link": "/online-salon/index",
         "activeMatch": "/online-salon/"

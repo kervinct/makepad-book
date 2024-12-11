@@ -2,11 +2,13 @@ import { useLang, usePageData } from 'rspress/runtime';
 import Theme from 'rspress/theme';
 import Announcement from './components/Announcement';
 import { HomeLayout } from './pages/home';
-const ANNOUNCEMENT_URL= "/contribute";
+import { useI18nUrl } from './i18n';
 
 const Layout = () => {
     const { page } = usePageData();
     const lang = useLang();
+    const tUrl = useI18nUrl();
+    const ANNOUNCEMENT_URL= tUrl("/guide/start/introduction");
     return (
       <Theme.Layout
         beforeNav={
@@ -14,8 +16,8 @@ const Layout = () => {
             href={ANNOUNCEMENT_URL}
             message={
               lang === 'en'
-                ? 'The Book of Makepad is under construction and contributions are welcome!'
-                : 'Makepad之书 正在加紧施工中，欢迎大家参与贡献！🦀️'
+                ? 'Makepad Book(V1) has been released!🦀️'
+                : 'Makepad Book 第一版已经发布！🦀️'
             }
             localStorageKey="makepad-book-announcement-closed"
             display={page.pageType === 'home'}

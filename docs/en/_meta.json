@@ -1,8 +1,8 @@
 [
     {
-        "text": "online-salon",
-        "link": "/online-salon/index",
-        "activeMatch": "/online-salon/"
+        "text": "guide",
+        "link": "/guide/start/introduction",
+        "activeMatch": "/guide/"
     },
     {
         "text": "workshop",
