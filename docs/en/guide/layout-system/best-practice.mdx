@@ -1,25 +1,23 @@
-# 最佳实践建议
+# Best Practice Recommendations
 
-**明确的尺寸层级**
+**Clear Size Hierarchy**
 
-- 顶层容器使用明确的尺寸约束
-- 避免过深的 Fit 嵌套
+- Use explicit size constraints for top-level containers
+- Avoid deep Fit nesting
 
-**单向依赖原则**
+**Single Direction Dependency Principle**
 
-- 尽量保持布局依赖的单向性
-- 使用 Fixed 和 Fill 建立清晰的约束
+- Maintain one-way layout dependencies
+- Use Fixed and Fill to establish clear constraints
 
-**组件设计原则**
+**Component Design Principles**
 
-- 组件应该有明确的尺寸策略
-- 提供合理的默认值和回退方案
+- Components should have clear sizing strategies
+- Provide reasonable defaults and fallback options
 
-**性能优化**
+**Performance Optimization**
 
-- 使用 CachedView 缓存稳定布局
-- 避免不必要的动态布局计算
+- Use CachedView to cache stable layouts
+- Avoid unnecessary dynamic layout calculations
 
-通过理解和遵循这些原则，我们能够创建更稳定和高效的布局系统，避免陷入循环依赖的陷阱。
-
-在实际开发中，保持布局的简单性和可预测性是关键。
+By understanding and following these principles, we can create more stable and efficient layout systems. In practical development, maintaining layout simplicity and predictability is key.

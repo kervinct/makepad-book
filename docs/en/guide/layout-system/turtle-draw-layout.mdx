@@ -1,47 +1,47 @@
-# Turtle Draw 布局系统
+# Turtle Draw Layout System
 
-## 基本概念
+## Basic Concepts
 
-turtle布局系统包含以下核心概念：
+The turtle layout system contains the following core concepts:
 
 ```rust
 pub struct Turtle {
-    // 当前海龟位置
-    walk: Walk,         // 布局行为
-    layout: Layout,     // 布局规则
-    wrap_spacing: f64,  // 换行间距
-    align_start: usize, // 对齐开始位置
-    defer_count: usize, // 延迟计数
-    shift: DVec2,      // 位移量
-    pos: DVec2,        // 当前位置
-    origin: DVec2,     // 起始位置
-    width: f64,        // 宽度
-    height: f64,       // 高度
-    width_used: f64,   // 已使用宽度
-    height_used: f64,  // 已使用高度
+    // Current turtle position
+    walk: Walk,         // Layout behavior
+    layout: Layout,     // Layout rules
+    wrap_spacing: f64,  // Wrapping spacing
+    align_start: usize, // Alignment start position
+    defer_count: usize, // Defer count
+    shift: DVec2,      // Offset amount
+    pos: DVec2,        // Current position
+    origin: DVec2,     // Starting position
+    width: f64,        // Width
+    height: f64,       // Height
+    width_used: f64,   // Width consumed
+    height_used: f64,  // Height consumed
 }
 ```
 
-## 基本绘制流程
+## Basic Drawing Process
 
 ```rust
-// 开始一个 turtle 布局
+// Start a turtle layout
 cx.begin_turtle(walk, layout);
 
-// 绘制过程示例
-turtle.move_to(10.0, 10.0);  // 移动到指定位置
-turtle.line_to(100.0, 100.0); // 画线到指定位置
-turtle.rect(0.0, 0.0, 50.0, 30.0); // 绘制矩形
+// Drawing process example
+turtle.move_to(10.0, 10.0);  // Move to specified position
+turtle.line_to(100.0, 100.0); // Draw line to specified position
+turtle.rect(0.0, 0.0, 50.0, 30.0); // Draw rectangle
 
-// 结束布局
+// End layout
 cx.end_turtle();
 ```
 
-## 位置计算实例
+## Position Calculation Example
 
 ```rust
 impl Turtle {
-    // 计算下一个位置
+    // Calculate next position
     pub fn next_pos(&mut self, size: DVec2) -> DVec2 {
         match self.layout.flow {
             Flow::Right => {
@@ -56,23 +56,23 @@ impl Turtle {
                 self.height_used = self.height_used.max(self.pos.y);
                 pos
             }
-            // ... 其他流向的处理
+            // ... Handle other flow directions
         }
     }
 }
 ```
 
-## 复杂布局示例
+## Complex Layout Examples
 
-### 嵌套布局
+### Nested Layouts
 
 ```rust
 MyView = <View> {
-    // 外层 turtle
+    // Outer turtle
     walk: {width: Fill, height: Fit},
     layout: {flow: Down, spacing: 10},
 
-    // 内层 turtle
+    // Inner turtle
     <View> {
         walk: {width: Fill, height: Fit},
         layout: {
@@ -81,16 +81,16 @@ MyView = <View> {
             padding: {left: 10, right: 10}
         },
 
-        // 内容组件
+        // Content components
         <Button> {}
         <Button> {}
     }
 }
 ```
 
-### 延迟布局（Defer）机制
+### Defer Mechanism
 
-当布局需要等待某些条件满足时，可以使用延迟布局：
+When layout needs to wait for certain conditions to be met, it can use deferred layout:
 
 ```rust
 impl Turtle {
@@ -99,23 +99,23 @@ impl Turtle {
             return None;
         }
 
-        // 处理延迟布局的逻辑
+        // Handle deferred layout logic
         match self.layout.flow {
             Flow::Right if walk.width.is_fill() => {
-                // 处理右向流式布局中的延迟
+                // Handle deferral in right-flowing layout
                 let spacing = self.child_spacing();
                 self.pos.x += spacing.x;
                 Some(DeferWalk::Unresolved{...})
             }
-            // ... 其他情况处理
+            // ... Handle other cases
         }
     }
 }
 ```
 
-## Turtle 布局对齐系统
+## Turtle Layout Alignment System
 
-### 对齐方式
+### Alignment Calculation
 
 ```rust
 pub struct AlignEntry {
@@ -127,30 +127,30 @@ pub struct AlignEntry {
 
 impl Cx2d {
     pub fn align_items(&mut self) {
-        // 遍历所有需要对齐的项
+        // Iterate through all items needing alignment
         for item in &self.draw_align_list {
-            // 计算对齐位置
+            // Calculate alignment position
             let shift = match self.layout.align {
                 Align::Center => {
                     (self.width - item.size.x) * 0.5
                 },
-                // ... 其他对齐方式
+                // ... Handle other alignment types
             };
 
-            // 应用对齐
+            // Apply alignment
             self.shift_align_range(&item.align_range, shift);
         }
     }
 }
 ```
 
-### 实际对齐示例
+### Practical Alignment Example
 
 ```rust
 CenteredContent = <View> {
     layout: {
         flow: Down,
-        align: {x: 0.5, y: 0.0}  // 水平居中，顶部对齐
+        align: {x: 0.5, y: 0.0}  // Horizontal center, top align
     },
 
     <Text> {
@@ -162,9 +162,9 @@ CenteredContent = <View> {
     }
 }
 ```
-## Turtle 性能优化
+## Turtle Performance Optimization
 
-**缓存机制**
+**Caching Mechanism**
 
 ```rust
 pub struct DrawStateWrap<T: Clone> {
@@ -175,7 +175,7 @@ pub struct DrawStateWrap<T: Clone> {
 impl<T: Clone> DrawStateWrap<T> {
     pub fn begin(&mut self, cx: &mut Cx2d, init: T) -> bool {
         if self.redraw_id != cx.redraw_id() {
-            // 只在必要时更新状态
+            // Only update state when necessary
             self.redraw_id = cx.redraw_id();
             self.state = Some(init);
             true
