@@ -1,50 +1,50 @@
-# 语法基础
+# Syntax
 
-## 属性
+## Properties
 
-属性用于数据绑定。在 Live DSL 中属性主要分为两类：
+Properties are used for data binding. In Live DSL, properties are primarily divided into two categories:
 
-- 字段属性( `:` )，通常用于定义该类型声明的固有属性或结构性属性,这些属性是类型定义的一部分
-- 实例属性(`=`)，通常用于定义继承或覆盖的属性
+- Field properties (`:`), typically used to define inherent or structural properties of the type declaration, these properties are part of the type definition
+- Instance properties (`=`), typically used to define inherited or overridden properties
 
-### 字段属性（Field Properties）
+### Field Properties
 
-使用冒号(`:`)定义，通常用于定义组件的固有属性：
+Defined using a colon (:), typically used to define a component's inherent properties:
 
 ```rust
 MyWidget = {{Widget}} {
-    // 字段属性示例
-    color: #f00,         // 颜色属性
-    width: 100,         // 数值属性
-    visible: true,      // 布尔属性
-    name: "button",     // 字符串属性
-    padding: {          // 嵌套字段属性
+    // Field property examples
+    color: #f00,         // Color property
+    width: 100,         // Numeric property
+    visible: true,      // Boolean property
+    name: "button",     // String property
+    padding: {          // Nested field property
         left: 10,
         right: 10
     }
 }
 ```
-**字段属性的特点**:
+**Field Property Characteristics**:
 
-- 用于定义组件的基本属性和状态
-- 值会直接映射到 Rust 结构体的字段
-- 使用冒号 `:` 分隔键和值
-- 可以被子组件继承和覆盖
-- 一般用于定义组件的静态配置
+- Used to define component's basic properties and state
+- Values directly map to Rust struct fields
+- Uses colon `:` to separate key and value
+- Can be inherited and overridden by child components
+- Generally used to define component's static configuration
 
-### 实例属性（Instance Properties）
+### Instance Properties
 
-使用等号(`=`)定义，通常用于定义可变或动态的属性：
+Defined using the equals sign (=), typically used to define variable or dynamic properties:
 
 ```rust
 Container = {{View}} {
-    // 实例属性示例
-    Button1 = <Button> {  // 创建 Button 实例
+    // Instance property examples
+    Button1 = <Button> {  // Create Button instance
         width: 100,
         label: "Click me"
     }
 
-    Panel = <View> {     // 创建 View 实例
+    Panel = <View> {     // Create View instance
         flow: Down,
         Button2 = <Button> {
             width: 200
@@ -52,36 +52,36 @@ Container = {{View}} {
     }
 }
 ```
-实例属性的特点:
+Instance property characteristics:
 
-- 用于创建子组件实例
-- 使用等号 `=` 分隔
-- 通常与 `<ComponentType>` 语法一起使用
-- 可以嵌套定义形成组件树
-- 实例会在运行时创建为实际的组件对象
-- 用于构建组件的层级结构
+- Used to create child component instances
+- Uses equals sign `=` for assignment
+- Typically used with `<ComponentType>` syntax
+- Can be nested to form component trees
+- Instances are created as actual component objects at runtime
+- Used to build component hierarchy
 
-### 二者关系
+### Relationship Between Properties
 
-两者搭配，来创建组件。
+Both types work together to create components:
 
 ```rust
 MyComponent = {{Component}} {
-    // 字段属性 - 定义组件本身的属性
+    // Field properties - define component's own attributes
     width: Fill,
     color: #f00,
 
-    // 实例属性 - 创建子组件
+    // Instance properties - create child components
     Header = <View> {
         height: 50
     }
 
     Content = <View> {
-        // 字段属性
+        // Field properties
         flow: Down,
         spacing: 10,
 
-        // 嵌套实例属性
+        // Nested instance properties
         button1 = <Button> {
             label: "OK"
         }
@@ -91,33 +91,31 @@ MyComponent = {{Component}} {
     }
 }
 
-// 字段属性会映射到结构体字段
+// Field properties map to struct fields
 #[derive(Live)]
 pub struct Component {
-    #[live] pub width: Size,    // 对应 width: Fill
-    #[live] pub color: Vec4,    // 对应 color: #f00
+    #[live] pub width: Size,    // Corresponds to width: Fill
+    #[live] pub color: Vec4,    // Corresponds to color: #f00
 }
 
-// 实例属性会创建新的组件实例
+// Instance properties create new component instances
 impl Widget for Component {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event) {
-        // 可以通过 button() 访问子实例
+        // Can access child instances through button()
         let button = self.button(id!(button1));
         button.handle_event(cx, event);
     }
 }
 ```
 
-**关键区别**:
+#### **Key Differences**
 
-- 字段属性(`:`)定义组件的属性和配置
-- 实例属性(`=`)创建组件的实例和层级结构
-- 字段属性映射到 Rust 结构体字段
-- 实例属性创建实际的组件对象
-- 字段属性可继承，实例属性形成新的组件树节点
+- Field properties (`:`) define component attributes and configuration
+- Instance properties (`=`) create component instances and hierarchy
+- Field properties map to Rust struct fields
+- Instance properties create actual component objects
+- Field properties can be inherited, instance properties form new component tree nodes
 
-实例属性在运行时会创建实际的组件对象，可以通过模板 ID 来查找和访问。而字段属性会直接影响组件自身的属性值。
+Instance properties create actual component objects at runtime that can be accessed via template IDs, while field properties directly affect the component's own property values.
 
-理解这两种属性的区别和用途对于正确使用 Live DSL 构建界面非常重要。
-
-字段属性用于配置，实例属性用于组织组件结构。
+Understanding the distinction between these two property types is crucial for correctly using Live DSL to build interfaces. Field properties are for configuration, while instance properties are for organizing component structure.
