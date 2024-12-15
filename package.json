@@ -17,6 +17,7 @@
     "react-dom": "^18.3.1",
     "rspress": "^1.35.3",
     "rspress-plugin-align-image": "^0.3.0",
+    "rspress-plugin-google-analytics": "^0.3.0",
     "rspress-plugin-mermaid": "^0.3.0"
   },
   "devDependencies": {

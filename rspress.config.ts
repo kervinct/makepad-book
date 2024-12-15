@@ -4,6 +4,7 @@ import { defineConfig } from 'rspress/config';
 // plugins
 import mermaid from 'rspress-plugin-mermaid';
 import alignImage from 'rspress-plugin-align-image';
+import ga from 'rspress-plugin-google-analytics';
 
 export default defineConfig({
   base: '/makepad-book/',
@@ -16,6 +17,9 @@ export default defineConfig({
   plugins: [
     mermaid(),
     alignImage(),
+    ga({
+      id: 'G-F4639SEF31',
+    })
   ],
   logo: {
     light: '/logo_makepad.svg',

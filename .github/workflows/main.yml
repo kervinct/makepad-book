@@ -1,8 +1,10 @@
-name: Deploy Makepad Treasures to GitHub Pages
+name: Makepad Book CI/CD
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main, preview]
 
   workflow_dispatch:
 
@@ -45,6 +47,7 @@ jobs:
 
   # Deployment job
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
