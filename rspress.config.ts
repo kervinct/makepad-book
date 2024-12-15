@@ -40,7 +40,7 @@ export default defineConfig({
         label: '简体中文',
         editLink: {
           docRepoBaseUrl:
-            'https://github.com/Project-Robius-China/makepad-book/tree/main/docs/zh',
+            'https://github.com/Project-Robius-China/makepad-book/tree/main/docs',
           text: '📝 在 GitHub 上编辑此页',
         },
         searchNoResultsText: '未搜索到相关结果',
@@ -52,7 +52,7 @@ export default defineConfig({
         label: 'English',
         editLink: {
           docRepoBaseUrl:
-            'https://github.com/Project-Robius-China/makepad-book/tree/main/docs/en',
+            'https://github.com/Project-Robius-China/makepad-book/tree/main/docs',
           text: '📝 Edit this page on GitHub',
         },
       }
