@@ -4,11 +4,10 @@
 >
 > 源码地址: [https://github.com/makepad/makepad/tree/rik](https://github.com/makepad/makepad/tree/rik)
 
-
 `Makepad Framework` 主要包含两大部分：
 
 - makepad-platform： 平台抽象层。它对跨平台的各种操作做了抽象和封装。
-- makepad-widget：Makepad 内置 UI Widget组件库。它提供了一系列内置的 Widget 组件，用于构建用户界面和一个支持 DSL 设计的保留模式小部件系统。
+- makepad-widget：Makepad 内置 UI Widget 组件库。它提供了一系列内置的 Widget 组件，用于构建用户界面和一个支持 DSL 设计的保留模式小部件系统。
 
 ## Makepad Platform
 
@@ -76,7 +75,7 @@ pub struct Button {
 
 上面这段代码的作用是定义了一个 可设置颜色的 按钮（Button）。
 
-其中的 `live_design!` 、`#[derive(Live)]` 和 `#[live]`  这些过程宏就属于 Live 系统，它们共同作用于 `Button` 结构体，就创建了这个「按钮」小部件（Widget）。
+其中的 `live_design!` 、`#[derive(Live)]` 和 `#[live]` 这些过程宏就属于 Live 系统，它们共同作用于 `Button` 结构体，就创建了这个「按钮」小部件（Widget）。
 
 - `#[derive(Live)]` 是 Rust 中的派生宏，它会自动为 `Button` 结构体实现 `Live trait`，这是 「按钮」控件能与 Live 系统的交互需要的所有必要的机制。
 
@@ -117,7 +116,7 @@ pub struct DrawColor {
 
 ```
 
-MPSL 代码是可以嵌入到 Live DSL 代码中的。其中 `DrawColor` 的字段 `draw_super` 类型 DrawQuad ，代表该结构体继承了 `DrawQuad` 的行为 （为这个字段实现了 `deref` trait）。这算是一个 Rust/C 中的技巧，算是一种行为代理。`DrawQuad` 是 Makepad 框架中 draw crate 提供的功能，代表了绘制人意四边形的基本着色器。
+MPSL 代码是可以嵌入到 Live DSL 代码中的。其中 `DrawColor` 的字段 `draw_super` 类型 DrawQuad ，代表该结构体继承了 `DrawQuad` 的行为 （为这个字段实现了 `deref` trait）。这算是一个 Rust/C 中的技巧，算是一种行为代理。`DrawQuad` 是 Makepad 框架中 draw crate 提供的功能，代表了绘制任意四边形的基本着色器。
 
 :::info 说明
 
@@ -172,7 +171,7 @@ Makepad 的 2D 和 3D 绘图层（drawing layer）也包含在 Makepad platform 
 - 一组内置的基本 Widget ，包括按钮、复选框、列表等等常用的控件。
 - 一个支持 DSL 设计的保留模式小部件系统。
 
-makepad-widget 的 src 组织结构中包含了很多文件，代表了不同的 UI  控件大概可以作如下分类：
+makepad-widget 的 src 组织结构中包含了很多文件，代表了不同的 UI 控件大概可以作如下分类：
 
 1. 控件实现：如 `button.rs`, `check_box.rs`, `slider.rs`, `text_input.rs` 等，这些文件可能包含各种 UI 控件的实现。
 2. 辅助功能：如 `image_cache.rs`, `keyboard_view.rs`, `scroll_bars.rs`，这些可能提供支持控件显示和交互的附加功能。
